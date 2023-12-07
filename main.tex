@@ -1,0 +1,41 @@
+% Finished mode.
+% \documentclass[nocolor]{article}
+% \documentclass{article}
+
+% Draft mode.
+% \documentclass[working,nocolor]{article}
+%\documentclass[working]{article}
+\documentclass[working,a4paper,12pt]{article}
+\usepackage[left=30mm,right=30mm,top=35mm,bottom=40mm]{geometry}
+
+\input{preamble.tex}
+
+\usepackage{lipsum} % For random text. You don't need this.
+
+\title{Reinforcement Learning Notes}
+\author{Varad Vaidya}
+\date{\today}
+
+\newcommand{\linktootherpages}{varadvaidya.github.io}
+\newcommand{\shortlinkname}{varadVaidya}
+\newcommand{\term}{Fall Term}
+\newcommand{\academicyear}{$2023$}
+\newcommand{\faculty}{}
+
+\begin{document}
+  \createintro
+
+  % start lectures
+\part{David Silver's Lecture}
+  
+  \input{david_silver/lec1}
+
+
+  
+  % \input{lectures/lec-01.tex}
+  % \input{lectures/lec-02.tex}
+  % \input{lectures/lec-03.tex}
+  % end lectures
+
+  \listnotes
+\end{document}
