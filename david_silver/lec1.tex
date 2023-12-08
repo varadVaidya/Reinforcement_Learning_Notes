@@ -84,7 +84,7 @@ And for the environment:
 \end{itemize}
 
 \subsection{Elements of Reinforcement Learning --- State}
-History and State:
+\textbf{History and State:}
 The history is the sequence of observations, actions, rewards:
 \[
     H_t = A_1, O_1, R_1, \dots, A_t, O_t, R_t  
@@ -98,7 +98,7 @@ happens next depends on the history.
 But this history is not very useful. Typically this history is very long, and not practical to
 use. Thus, we need to define a more useful quantity, the state.
 
-State: is the information used to determine what happens next. It is the information that is
+\textbf{State:} is the information used to determine what happens next. It is the information that is
 relevant to make the decision. It is a function of the history:
 \[
     S_t = f(H_t)
@@ -106,17 +106,15 @@ relevant to make the decision. It is a function of the history:
 One of the valid definitions of the state is the complete history, or just the last observation. 
 In Atari games, the state is the usually the last 4 frames of the game.
 
-Here we are describing 3 different definations of the state:
-
-Environment State: 
+Here we are describing 3 different definations of the state:\\
+\textbf{Environment State: }
 \begin{itemize}
     \item The environment state \(S_t^e\) is the environment's private representation.
     \item whatever the environment uses to pick the next observation and reward. 
     \item The environment state is usually not visible to the agent.
     \item Even if \(S_t^e\) is visible, it may not be useful and might contain irrelevant information.
 \end{itemize}
-
-Agent State:
+\textbf{Agent State:}
 \begin{itemize}
     \item The agent state \(S_t^a\) is the agent's internal representation.
     \item whatever information the agent uses to pick the next action.
@@ -126,8 +124,7 @@ Agent State:
         S_t^a = f(H_t)  
     \]
 \end{itemize}
-
-Information State:\\
+\textbf{Information State:}\\
 An information state (also called Markov state) contains all useful information from the history.
 \begin{definition}[Markov State]
     A state \(S_t\) is Markov if and only if:
