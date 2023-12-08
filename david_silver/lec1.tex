@@ -129,7 +129,7 @@ An information state (also called Markov state) contains all useful information 
 \begin{definition}[Markov State]
     A state \(S_t\) is Markov if and only if:
     \[
-        P[S_{t+1} | S_t] = P[S_{t+1} | S_1, \dots, S_t]  
+        \mathbb{P} [S_{t+1} | S_t] = \mathbb{P} [S_{t+1} | S_1, \dots, S_t]  
     \]
 \end{definition}
 In other words, the future is independent of the past given the present.
@@ -143,4 +143,207 @@ angular velocity, and any other external disturbances. Once, these states are kn
 state can be predicted, without needing any other information from the history.
 
 Also note that, the environment state \(S_t^e\) is Markov. Also, one of the rather not useful Markov
-state is the complete history \(H_t\).  
+state is the complete history \(H_t\).\\
+\begin{example}[Rat Example]
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{figures/rat_example.png}
+    \caption{Action and Reward sequence/ history for the rat example.}
+    \label{fig:rat_example}
+\end{figure}
+Based on the history and expericence of the rat sequence, shown 
+in \autoref{fig:rat_example}, we can define the state as:
+the rat can either be electrocuted or be rewarded with a piece of cheese. Now is
+we are using the last three observations in the sequence, as the agent state, 
+then we would believe that the rat might be electrocuted, but if we use the
+agent state as the count for lights, bells and levers, then we would expect the cheese would be 
+rewarded. 
+
+Thus, it clear that what we believe will happen next, depends on our representation of the state.
+Another example of the valid state would be to consider the entire history as the state.
+From this state representation, we don't know what will happen next.
+\end{example}
+So the state representation defines what happens next, which can be characterised by many different
+ways, and it is up to the designer to choose the state representation to be useful to solve the 
+problem at hand.
+
+\textbf{Environments:}\\
+Fully observable environments: the agent directly observes the environment state.
+\[
+    \implies O_t = S_t^a = S_t^e
+\]
+Meaning that the agent state and the environment state are the same.\\
+Formally, this representation is called as a \textbf{Markov Decision Process (MDP)}.\\
+Partially observable environments: the agent indirectly observes the environment state.
+Examples:
+\begin{itemize}
+    \item A robot with a camera vision isn't told its exact position.
+    \item A trading agent only observes current price and volume.
+    \item A poker agent only observes public cards and bets.
+\end{itemize}
+Now the agent state and the environment state are different.
+\[
+    \implies S_t^a \neq S_t^e  
+\]
+Formally, this representation is called as a \textbf{Partially Observable Markov 
+Decision Process (POMDP)}. Thus, the agent must construct its own state representation \(S_t^a\).
+Some examples of the agent state representation:
+\begin{itemize}
+    \item Complete history \(H_t\).
+    \item Beliefs about the environment state: \(S_t^a = (\mathbb{P}[S_t^e = s^1], 
+    \dots, \mathbb{P}[S_t^e = s^n])\) i.e. that there is some probability that the environment
+    state is \(s^1\), and some probability that the environment state is \(s^2\), and so on.
+    \item Recurrent neural network: \(S_t^a = \sigma (S_{t-1}^a W_s + O_t W_o)\).
+\end{itemize}
+
+\subsection{Inside an RL Agent}
+An RL agent may include one or more of the following:
+\begin{itemize}
+    \item \textbf{Policy}: agent's behaviour function.
+    \item \textbf{Value function}: how good is each state and/or action.
+    \item \textbf{Model}: agent's representation of the environment.
+\end{itemize}
+
+\textbf{Policy}:\\
+Policy in short is the behaviour of the agent. It is the agent's behaviour function. Thus, 
+it is a map from state to action. It can be:
+\begin{itemize}
+    \item deterministic policy: \(a = \pi(s)\)
+    \item stochastic policy: \(\pi(a|s) = \mathbb{P}[A_t = a | S_t = s]\)
+\end{itemize}
+
+\textbf{Value Function:}\\
+The value function is the expected total future reward. This is used 
+to evaluate the goodness/badness of states. It is the expected total future reward from state \(s\).
+\[
+    v_\pi(s) = \mathbb{E}_\pi [R_t + \gamma R_{t+1} + \gamma^2 R_{t+2} + \dots | S_t = s]  
+\]
+where, \(\gamma \in [0, 1]\) is called the discount factor, which determines how much importance
+is given to the immediate reward, compared to the future rewards.\\
+
+\textbf{Model:}\\
+The model predicts what the environment will do next. The idea is do predict what the next state
+will be based on the environment, and plan accordingly to maximise the reward. This is often 
+characterised into two parts:
+\begin{itemize}
+    \item \textbf{Transition model}: \(\mathcal{P} \) predicts the next state (or states) given
+     current state and action.
+    Can be considered as the dynamics of the environment.
+    \[
+        \mathcal{P}_{ss'}^a = \mathbb{P}[S_{t+1} = s' | S_t = s, A_t = a]
+    \]
+    \item \textbf{Reward model}: \(\mathcal{R}\) predicts the next immediate reward given
+     current state and action.
+    \[
+        \mathcal{R}_s^a = \mathbb{E}[R_{t+1} | S_t = s, A_t = a]
+    \]
+\end{itemize}
+
+It is not necessary to have a model to solve the reinforcement learning problem. 
+
+\begin{example}[Maze Example]
+    One of the standard RL grid world examples. The goal is to go from the 
+    start state to the goal state. The agent can move in any of the four directions,
+    i.e. up, down, left, right. The agent receives a reward of -1 for each step it takes.
+    Thus, the agent wants to reach the goal state in as few steps as possible.
+    % create a figure for the maze examplw with subfigures to denote policy and
+    % value function. there should be 3 images alonside each other
+    \begin{figure}[H]
+        \centering
+        \begin{subfigure}[b]{0.3\textwidth}
+            \includegraphics[width=\textwidth]{figures/maze_blank.png}
+            \caption{Maze Example}
+            \label{fig:maze_example}
+        \end{subfigure}
+        \begin{subfigure}[b]{0.3\textwidth}
+            \includegraphics[width=\textwidth]{figures/maze_policy.png}
+            \caption{Policy}
+            \label{fig:maze_policy}
+        \end{subfigure}
+        \begin{subfigure}[b]{0.3\textwidth}
+            \includegraphics[width=\textwidth]{figures/maze_value.png}
+            \caption{Value Function}
+            \label{fig:maze_value_function}
+        \end{subfigure}
+        \caption{Maze Example}
+    \end{figure}
+
+    The arrows in the \autoref{fig:maze_policy} denote the policy
+    \(\pi (s)\) of the agent for each state \(s\)  So the agent will transition from ome state to another based on
+    the direction of the arrow provided by the policy. In this case it is a 
+    deterministic policy, that directly maps the state to the action.\\
+    The value function in this example is the number of steps 
+    it takes to reach the goal state.
+    Now once we have all the values, it is very simple to build an optimal policy. 
+
+\end{example}
+
+So to categorise the RL agents:
+\begin{itemize}
+    \item Value based agents: select actions based on value functions.
+    \item Policy based agents: select actions based on policy functions.
+    \item Actor-critic agents: select actions based on both value and policy functions.
+\end{itemize}
+Based on the model:
+\begin{itemize}
+    \item Model free agents: do not have a model/ or explicitly build the model of the environment.
+    \item Model based agents: have a model of the environment.
+\end{itemize}
+Both, model based an model free agents can be value based, policy based, or actor-critic agents.
+
+\subsection{Problems within Reinforcement Learning}
+\subsubsection{RL and Planning}
+There are two main problems in sequential decision making:
+\begin{itemize}
+    \item \textbf{Reinforcement Learning:}
+    \begin{itemize}
+        \item The environment is initially unknown.
+        \item The agent interacts with the environment.
+        \item The agent improves its policy.   
+    \end{itemize}
+    \item \textbf{Planning:}
+    \begin{itemize}
+        \item A model of the environment is known.
+        \item The agent performs computations with its model (without any external interaction).
+        \item The agent improves its policy.
+        \item thus the policy does reasoning, introspection, search etc.
+    \end{itemize}
+\end{itemize}
+These two approaches are linked. First, we can learn a model of the environment, and then use 
+planning approach to improve the policy.
+This can be understood from the Atari game example.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{figures/atari_rl.png}
+    \caption{Atari Game Example --- RL}
+    \label{fig:atari_rl}
+\end{figure}
+The \autoref{fig:atari_rl} shows 
+the RL approach to the Atari game. The rules of the game are unknown, 
+and the agent learns from the interaction with the game. The loop is basically
+pick actions on the joystick, see pixels and scores.
+
+\begin{figure}[!htp]
+    \centering
+    \includegraphics[width=0.6\textwidth]{figures/atari_planning.png}
+    \caption{Atari Game Example --- Planning}
+    \label{fig:atari_planning}
+\end{figure}
+The \autoref{fig:atari_planning} shows the planning approach to the Atari game. 
+The rules of the game are known, and the agent can query the emulator, thus 
+giving the perfect model inside the agent's brain. So the agent has 
+perfect answer to the question, which state \(s_t\) the agent will be in, if it takes
+action \(a_t\) in state \(s_{t-1}\), and the corresponding reward \(r_t\).
+Thus, the agent can plan ahead, and find the optimal policy.
+
+\subsubsection{Exploration and Exploitation}
+Reinformcement learning is like trial and error learning. The agent should try to maximise the
+reward, but it does not know what will happen next. Thus, the agent must figure out the 
+best part of the state-action space, from its experience of the environment, without
+losing too much reward along the way, while it is learning.\\
+
+Thus, the exploration and exploitation trade-off is a fundamental dilemma in reinforcement learning.
+\begin{itemize}
+    \item \textbf{Exploration:} gaining more information about the environment.
+    \item \textbf{Exploitation:} exploiting known information to maximise reward.
+\end{itemize}

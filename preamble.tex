@@ -18,6 +18,7 @@
 \usepackage{cancel}
 % Lets us edit the caption of a figure.
 \usepackage{caption}
+\usepackage{subcaption}
 % Lets us import pdf directly in our tex code.
 \usepackage{pdfpages}
 % Lets us do algorithm stuff.
@@ -27,6 +28,7 @@
 \renewcommand\qedsymbol{$\Laughey$}
 
 \def\class{article}
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -701,4 +703,54 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%
 \makeatletter
 \newcommand\tcb@cnt@Definitionautorefname{Definition}
+\makeatother
+
+
+%%%%%%%%%%%%%%
+% part on a seperate page
+%%%%%%%%%%%%%%
+
+\makeatletter
+\renewcommand\part{%
+%  \if@openright
+%    \cleardoublepage
+%  \else
+    \clearpage
+%  \fi
+  \thispagestyle{plain}%
+  \if@twocolumn
+    \onecolumn
+    \@tempswatrue
+  \else
+    \@tempswafalse
+  \fi
+  \null\vfil
+  \secdef\@part\@spart}
+
+\def\@part[#1]#2{%
+    \ifnum \c@secnumdepth >-2\relax
+      \refstepcounter{part}%
+      \addcontentsline{toc}{part}{\thepart\hspace{1em}#1}%
+    \else
+      \addcontentsline{toc}{part}{#1}%
+    \fi
+    \markboth{}{}%
+    {\centering
+     \interlinepenalty \@M
+     \normalfont
+     \ifnum \c@secnumdepth >-2\relax
+       \huge\bfseries \partname\nobreakspace\thepart
+       \par
+       \vskip 20\p@
+     \fi
+     \Huge \bfseries #2\par}%
+    \@endpart}
+    
+\def\@spart#1{%
+    {\centering
+     \interlinepenalty \@M
+     \normalfont
+     \Huge \bfseries #1\par}%
+    \@endpart}
+\def\@endpart{\vfil\newpage}
 \makeatother
