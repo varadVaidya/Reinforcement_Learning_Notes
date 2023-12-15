@@ -100,9 +100,18 @@ Thus we have:
              & = \mathbb{E}  [ R_{t+1} + \gamma R_{t+2} + \gamma^{2} R_{t+3} + \dots \ |\  S_{t} = s] \\
              & = \mathbb{E}  [ R_{t+1} + \gamma (R_{t+2} + \gamma R_{t+3} + \dots) \ |\  S_{t} = s] \\
              & = \mathbb{E}  [ R_{t+1} + \gamma G_{t+1} \ |\  S_{t} = s] \\
-             & = \mathbb{E}  [ R_{t+1} + \gamma v(S_{t+1}) \ |\  S_{t} = s] \quad \dots \text{using the law of iterated expectations} \\ 
+             & = \mathbb{E}  [ R_{t+1} + \gamma v(S_{t+1}) \ |\  S_{t} = s] &&\dots \text{using the law of iterated expectations} \\ 
     \end{aligned}
 \]
+This can be explained with what is called the tree backup diagram.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{figures/value.png}
+    \caption{Recursive relationship between \(v(s)\) and \(v(s^{\prime} )\)}
+    \label{fig:value}
+\end{figure}
+From the \autoref{fig:value}, we can see that the value of the state \(s\) is the
+expected reward plus average of all the values of all the possible successor states.
 \[
     \implies v(s) = \mathcal{R} _{s} + \gamma \sum_{s^{\prime} \in \mathcal{S} } \mathcal{P} _{ss^{\prime}} v(s^{\prime})
 \]
@@ -228,9 +237,49 @@ The action value function can be decomposed into two parts similar to the value 
         S_t = s, A_t = a \right]
 \]
 
-\begin{note}
-    Add action values and state-action value diagrams
-\end{note}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{figures/value-pi.png}
+    \caption{The relationship between \(q_\pi\) and \(v_\pi\)}
+    \label{fig:value-pi}
+\end{figure}
+\[
+    \implies v_\pi (s) = \sum_{a \in \mathcal{A} } \pi (a|s) q_\pi (s, a)
+\]
+The \autoref{fig:value-pi} shows how \(q_\pi\) and \(v_\pi\) are related. The 
+black dots represent the possibel actions, while the circles represent the states. The 
+probabilities of chossing the action depends on the policy \(\pi \). For each of 
+the action we might take from state \(s\), we have a \(q\)-value \(q_\pi (s, a)\), that describes
+the expected return from taking action \(a\) in state \(s\). Thus, the value of the state \(s\), is calculated by taking the average of all the q values
+after doing a one step look-ahead.
+Simlarly the \(q\) value of the state action pair is calculated by averaging the value of the
+state that we might transition into according to the MDP dynamics, after taking action \(a\) 
+from state \(s\). The tree backup diagram for the \(q\) value is shown in \autoref{fig:q-value}.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{figures/action-pi.png}
+    \caption{The relationship between \(q_\pi\) and \(v_\pi\)}
+    \label{fig:q-value}
+\end{figure}
+\[
+    \implies q_\pi (s, a) = \mathcal{R} _{s}^{a} + \gamma \sum_{s^{\prime} \in \mathcal{S} } \mathcal{P} _{ss^{\prime}}^{a} v_\pi (s^{\prime} )
+\]
+
+Combining \autoref{fig:value-pi} and \autoref{fig:q-value}, 
+we get \autoref{fig:value-value} a recursive relationship between \(v(s)\) and \(v(s^{\prime} )\).
+Thus, we are averaging over the policy, and the transition dynamics of the MDP.
+\[
+    v_\pi (s) = \sum_{a \in \mathcal{A} } \pi (a|s) \left( 
+        \mathcal{R} _{s}^{a} + \gamma \sum_{s^{\prime} \in \mathcal{S} 
+        } \mathcal{P} _{ss^{\prime}}^{a} v_\pi (s^{\prime} ) \right)  
+\]
+\begin{figure}
+    \centering
+    \includegraphics[width=0.5\linewidth]{figures/value-value.png}
+    \caption{Recursive relationship between \(v(s)\) and \(v(s^{\prime} )\)}
+    \label{fig:value-value}
+\end{figure}
+
 The Bellman Expectation Equation can be written concisely in matrix form.
 \[
     \begin{aligned}
@@ -287,6 +336,56 @@ The optimal policy can be found by maximising over \(q_{*} (s, a)\).
 \subsubsection{Bellman Optimality Equation}
 The optimal vale functions are recursively related by the Bellman
 optimality equation.
+Before we looked at the Expectation equation, looking at the average
+value of the state. Now, we look at the maximum value of the state. 
+Thus, taking an action \(a\) from the state \(s\), we choose the action
+that has the maximum state-action value. The tree backup diagram for the
+optimal value function is shown in \autoref{fig:v-star}
+\[
+    v_{*} (s) = \max_{a \in \mathcal{A} } q_{*} (s, a)  
+\] 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{figures/v-star.png}
+    \caption{Bellman Optimality Equation for \(v_{*} (s)\)}
+    \label{fig:v-star}
+\end{figure}
+
+Similarly, the same argument can be made for the optimal action value function,
+with its tree backup diagram shown in \autoref{fig:q-star}.
+\[
+    q_{*} (s, a) = \mathcal{R} _{s}^{a} + \gamma \sum_{s^{\prime} \in \mathcal{S} } \mathcal{P} _{ss^{\prime}}^{a} v_{*} (s^{\prime} )
+\]
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{figures/q-star.png}
+    \caption{Bellman Optimality Equation for \(q_{*} (s, a)\)}
+    \label{fig:q-star}
+\end{figure}
+
+Combining \autoref{fig:v-star}
+ and \autoref{fig:q-star}
+ , we get \autoref{fig:qv-star},
+with the Bellman Optimality Equation for \(v_{*} (s)\), being written
+in a recursive form as
+\[
+    v_{*} (s) = \max_{a \in \mathcal{A} } \left( 
+        \mathcal{R} _{s}^{a} + \gamma \sum_{s^{\prime} \in \mathcal{S} } \mathcal{P} _{ss^{\prime}}^{a} v_{*} (s^{\prime} )
+     \right)  
+\]
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{figures/qv-star.png}
+    \caption{Recursive relationship between \(v_{*} (s)\) and \(v_{*} (s^{\prime} )\)} 
+    \label{fig:qv-star}
+\end{figure}
+Similarly, the Bellman Optimality Equation for \(q_{*} (s, a)\) can be written in
+a recursive form as
+\[
+    q_{*} (s, a) = \mathcal{R} _{s}^{a} + \gamma \sum_{s^{\prime}
+     \in \mathcal{S} } \mathcal{P} _{ss^{\prime}}^{a} 
+     \max_{a^{\prime} \in \mathcal{A} } q_{*} (s^{\prime} , a^{\prime} )
+\]
 
 \subsubsection*{Solving the Bellman Optimality Equation}
 \begin{itemize}
