@@ -1,0 +1,298 @@
+\section{Planning by Dynamic Programming}
+The word dynamic programming can be split into two parts:
+\begin{itemize} 
+    \item Dynamic: sequential or temporal aspect of the problem
+    \item Programming: optimisation of a program or a policy.
+    \end{itemize}
+
+The class of problems that dynammic programming can solve should have the following properties:
+\begin{itemize}
+    \item \textbf{Optimal substructure}: optimal solution can be decomposed into subproblems
+    \item \textbf{Overlapping subproblems}: subproblems recur many times and 
+    solutions can be cached and reused.
+\end{itemize}
+The framewwork that the RL is based on i.e. Markov Decision Process (MDP) has both 
+of these properties. The Bellman equation provides the way to decompose the optimility problem
+while the value function stores the solutions ans act as a cache to reuse the solutions.
+
+In the dynamic programming, we assume that the MDP is known, and hence is used for the planning
+in the MDP, and is not the solution to the complete RL problem with the machinery introduced
+in the previous lectures.
+Thus for prediction:
+\begin{itemize}
+    \item \textbf{Input}: MDP \(
+        \langle \mathcal{S}, \mathcal{A}, \mathcal{P}, \mathcal{R}, \gamma \rangle
+        \) and a policy \(\pi\) \emph{or} MRP \(
+        \langle \mathcal{S}, \mathcal{P}^{\pi}, \mathcal{R}^{\pi}, \gamma \rangle
+        \)
+    \item \textbf{Output}: value function \(v_{\pi}\)
+\end{itemize}
+and for control:
+\begin{itemize}
+    \item \textbf{Input}: MDP \(
+        \langle \mathcal{S}, \mathcal{A}, \mathcal{P}, \mathcal{R}, \gamma \rangle
+        \)
+    \item \textbf{Output}: optimal value function \(v_{*}\) and optimal policy \(\pi_{*}\)
+    The optimal value function implies the optimal policy.
+\end{itemize}
+Apart from RL problems, dynamic programming can be used to solve other problems like
+\begin{itemize}
+    \item Schduling algorithms
+    \item String algorithms
+    \item Graph algorithms (e.g. shortest path algorithms)
+    \item Bioinformatics
+\end{itemize}
+
+\subsection{Iterative Policy Evaluation}
+The iterative policy evaluation is used to evaluate the given policy \(\pi\) in an MDP. 
+Main idea to evaluate the value function \(v_{\pi}\) is to use the Bellman expectation equation,
+and perform a full backup at each state. The full backup means that the value function is updated
+using the value function of all the successor states. The update is done in an iterative manner
+until the value function converges. The backup is a synchronous backup, i.e. the value function
+is updated using the value function of the previous iteration for all the states. The algorithm
+is given in the Algorithm \autoref{alg:iterative_policy_evaluation}.
+
+
+\begin{algorithm}[H]
+    \SetAlgoLined
+    \KwResult{Value function \(v_{\pi}\)}
+    Initialize \(v_{\pi}(s) \in \mathbb{R}\) arbitrarily for all \(s \in \mathcal{S}\) \;
+    \While{\(v_{\pi}\) not converged}{
+        \For{\(s \in \mathcal{S}\)}{
+            \( v_{k+1}(s) \leftarrow \sum\limits_{a \in \mathcal{A}} 
+            \pi(a|s) \sum\limits_{s' \in \mathcal{S}} 
+            \left( 
+                R_{s}^{a} + \gamma \sum\limits_{s' \in \mathcal{S}}
+                P_{ss'}^{a} v_{k}(s')   
+             \right) \) \;
+        }
+    }
+    \caption{Iterative Policy Evaluation}
+    \label{alg:iterative_policy_evaluation}
+\end{algorithm}
+
+\subsection{Policy Iteration}
+The policy iteration is used to find the optimal policy \(\pi_{*}\) in an MDP. The main idea
+is to use the iterative policy evaluation to evaluate the policy \(\pi\) and then improve the policy
+by acting greedily with respect to the value function \(v_{\pi}\). Thus creating a new policy
+\(\pi^{\prime}  = \text{greedy}(v_{\pi})\), such that \(\pi^{\prime} \geq \pi  \).  The algorithm is given in the Algorithm \autoref{alg:policy_iteration}.
+
+
+\begin{algorithm}[H]
+    \SetAlgoLined
+    \KwResult{Optimal policy \(\pi_{*}\)}
+    Initialize \(v_{\pi}(s) \in \mathbb{R}\) arbitrarily for all \(s \in \mathcal{S}\) \;
+    \While{\(v_{\pi}\) not converged}{
+        \For{\(s \in \mathcal{S}\)}{
+            \( v_{k+1}(s) \leftarrow \sum\limits_{a \in \mathcal{A}} 
+            \pi(a|s) \sum\limits_{s' \in \mathcal{S}} 
+            \left( 
+                R_{s}^{a} + \gamma \sum\limits_{s' \in \mathcal{S}}
+                P_{ss'}^{a} v_{k}(s')   
+             \right) \) \\
+             \( \pi \leftarrow \text{greedy}(v_{\pi}) \) \\
+        }
+    }
+    \caption{Policy Iteration}
+    \label{alg:policy_iteration}
+\end{algorithm}
+
+When the \autoref{alg:policy_iteration} converges, 
+to the optimal value function \(v^{*}\), the policy \(\pi\) is the optimal policy \(\pi^{*}\).
+Note that it is possible that the policy coverges to the optimal policy even if the value function
+didn't converge to the optimal value function yet. Thus we can leverage this fact to stop the
+policy iteration earlier if we only want the optimal policy and not the optimal value function.
+
+
+The intution behind the idea can be explained as follows:
+
+Consider a deterministic policy \(a = \pi(s)\). We can improve the policy by acting
+greedily with respect to the value function
+\[
+        \pi^{\prime}(s) = \argmax_{a \in \mathcal{A}} q_{\pi}(s,a)
+\]
+This improves the value from any state \(s\) over one step of lookahead:
+\[
+    \begin{aligned}
+            q_{\pi}(s, \pi^{\prime}(s)) 
+            &= \max_{a \in \mathcal{A}} q_{\pi}(s,a) &&\dots\text{from the 
+            defination of \(\pi ^{\prime}\)}\\
+            &\geq q_{\pi}(s, \pi(s))\\
+            &= v_{\pi}(s) &&\dots\text{from the defination of \(v_{\pi}\)}\\
+    \end{aligned}
+\]
+It therefore improves the value function, by iterating this using a telescopic argument.
+\[
+        \begin{aligned}
+            v_\pi (s) &\leq q_{\pi}(s, \pi^{\prime}(s)) \\
+            &= \mathbb{E}_{\pi^{\prime}} \left[ R_{t+1} + \gamma v_{\pi}(S_{t+1}) |
+             S_{t} = s \right] \\
+                &\leq \mathbb{E}_{\pi^{\prime}} \left[ R_{t+1} + \gamma q_{\pi}(S_{t+1}, \pi^{\prime}(S_{t+1})) |
+                S_{t} = s \right] \\
+                &\leq \mathbb{E}_{\pi^{\prime}} \left[ R_{t+1} + \gamma R_{t+2} + \gamma^{2} v_{\pi}(S_{t+2}) |
+                S_{t} = s \right] \\
+                &\leq \mathbb{E}_{\pi^{\prime}} \left[ R_{t+1} + \gamma R_{t+2} + \dots |
+                S_{t} = s \right] \\
+                &= v_{\pi^{\prime}}(s) \\
+        \end{aligned}  
+\]
+thus \(v_{\pi^{\prime}}(s) \geq v_{\pi}(s)\) for all \(s \in \mathcal{S}\). So we are
+atleast not making things worse. Now, if the imporovemnts stop,
+\[
+    \begin{aligned}
+        q_\pi (s, \pi^{\prime}(s)) &= \max_{a \in \mathcal{A}} q_{\pi}(s,a) \\
+        &= q_{\pi}(s, \pi(s)) \\
+        &= v_{\pi}(s) \\ 
+    \end{aligned}
+\]
+which is basically the Bellman optimality equation. Thus we have found the optimal policy, 
+since this policy is satisfying the Bellman optimality equation. Thus we can use the iterative
+policy evaluation to evaluate the optimal policy.
+\[
+    \therefore v_\pi (s) = v_{\star} (s) \quad \forall s \in \mathcal{S}
+\]
+
+\subsection{Value Iteration}
+Any optimal policy can be subdivided into two parts:
+\begin{itemize}
+    \item An optimal fisrt action \(A_{*}\)
+    \item Followed by an optimal policy from the next state \(S^{\prime} \)
+\end{itemize}
+
+\begin{theorem}[Principal of Optimality]
+    A policy \(\pi(a|s)\) achieves the optimal value from state \(s\) \(v_{\pi}(s) = v^{*}(s)\)
+    if and only if for all \(s \in \mathcal{S}\) and \(a \in \mathcal{A}(s)\), \(\pi \) 
+    achieves the optimal value from \(s^{\prime}\)
+    \[
+        v_{\pi}(s^{\prime}) = v^{*}(s^{\prime})
+    \]
+\end{theorem}
+
+\subsubsection{Deterministic Value Iteration}
+If we know the solution to subproblems \(v_{*}(s^{\prime})\) for all \(s^{\prime} \in \mathcal{S}\),
+then we can easily solve the original problem by one step lookahead, and to apply this iteration
+iterativly.
+\[
+    v_{\star}(s) \gets \max_{a \in \mathcal{A}} \left(   
+    \mathcal{R} _{s}^{a} + \gamma 
+    \sum\limits_{s' \in \mathcal{S}} \mathcal{P}_{ss'}^{a} v_{*}(s') \right)
+\]
+Thus, using the iterative application of the Bellaman optimality backup using synchronous backups
+we get the \autoref{alg:deterministic_value_iteration}.
+Unlike the policy iteration, the value iteration there is no explicit policy, 
+and intermediate value functions may not correspond to any policy.
+\[
+    \implies v_2, v_3, \dots  \neq v_\pi \quad \text{for any policy} \pi  
+\]
+
+
+\begin{algorithm}[H]
+    \SetAlgoLined
+    \KwResult{Optimal value function \(v_{*}\)}
+    Initialize \(v_{\pi}(s) \in \mathbb{R}\) arbitrarily for all \(s \in \mathcal{S}\) \;
+    \While{\(v_{\pi}\) not converged}{
+        \For{\(s \in \mathcal{S}\)}{
+            \( v_{k+1}(s) \leftarrow \max\limits_{a \in \mathcal{A}} 
+            \left( 
+                R_{s}^{a} + \gamma \sum\limits_{s' \in \mathcal{S}}
+                P_{ss'}^{a} v_{k}(s')   
+             \right) \) \\
+        }
+    }
+    \caption{Deterministic Value Iteration}
+    \label{alg:deterministic_value_iteration}
+\end{algorithm}
+
+\subsubsection{Synchrounous Dynamic Programming Algorithms}
+\begin{itemize}
+    \item Algorithms are based on the state value function \(v_{\pi}\) or \(v_{\ast} (s)\)
+    \item Complexity is \(\mathcal{O}(mn^{2})\) per iteration, for \(m\) actions and \(n\) states
+    \item Could also apply to action value function \(q_{\pi}\) or \(q_{\ast}\)
+    \item Complexity is \(\mathcal{O}(m^{2} n^{2})\) per iteration, for \(m\) actions and \(n\) states
+    \end{itemize}
+\begin{table}[H]
+    \centering
+    \begin{tabular}{c|c|c}
+        \hline
+         \textbf{Problem} & \textbf{Bellman Equation} & \textbf{Algorithm} \\
+         \hline
+         Prediction & Bellman Expectation Equation & Iterative Policy Evaluation \\
+         \hline
+         Control & Bellman Expectation Equation + Greedy Policy Improvement & Policy Iteration \\
+         \hline
+            Control & Bellman Optimality Equation & Value Iteration \\
+         \hline
+    \end{tabular}
+    \caption{Synchronous Dynamic Programming Algorithms}
+    \label{tab:synchronous_dynamic_programming_algorithms}
+\end{table}
+
+\subsubsection{Asynchronous Dynamic Programming Algorithms}
+
+\subsubsection*{In-place Dynamic Programming}
+The synchronous dynamic programming algorithms require the storage of two copies of the value
+function, one for the current iteration and one for the next iteration.
+\[
+    \begin{aligned}
+        v_{\text{new}}(s) &\gets \max_{a \in \mathcal{A}} \left(   
+        \mathcal{R} _{s}^{a} + \gamma
+        \sum\limits_{s' \in \mathcal{S}} \mathcal{P}_{ss'}^{a} v_{\text{old}}(s') \right) \\
+        v_{\text{old}}(s) &\gets v_{\text{new}}(s) \quad \forall s \in \mathcal{S} \\
+    \end{aligned}
+\]
+In-place dynamic programming is a way to save the storage by updating the value function inplace,
+when it calculated.
+\[
+    v(s) \gets \max_{a \in \mathcal{A}} \left(
+        \mathcal{R}_{s}^{a} + \gamma \sum\limits_{s' \in \mathcal{S}} \mathcal{P}_{ss'}^{a} v(s')
+    \right) \quad \forall s \in \mathcal{S}
+\]
+
+\subsubsection*{Prioritized Sweeping}
+The prioritized sweeping is a way to improve the efficiency of the dynamic programming algorithms,
+by updating the states that are most likely to lead to large changes in other states, depending
+on the magnitude of the Bellman error, where the Bellman error is defined as
+\[
+    \delta = \left \vert
+        v(s) - \max_{a \in \mathcal{A}} \left(
+        \mathcal{R}_{s}^{a} + \gamma \sum\limits_{s' \in \mathcal{S}} \mathcal{P}_{ss'}^{a} v(s')
+    \right) \right \vert
+\]
+After the Bellman update, we upadte the Bellman error of the affeted states, thus requiring
+the knowledge of the predecessors of the state. This method can be
+implmented efficiently using a priority queue, where the priority of the state is the magnitude
+of the Bellman error.
+
+\subsubsection*{Real-time Dynamic Programming}
+The real-time dynamic programming is a way to improve the efficiency of the dynamic programming
+algorithms, by updating the states that are relevant to the agent, i.e. the states that the agent
+is likely to visit. The agents's experience is used to guide the choice of the states to update.
+
+\[
+    v(S_t) \gets \max_{a \in \mathcal{A}} \left(
+        \mathcal{R}_{S_t}^{a} + \gamma \sum\limits_{s' \in \mathcal{S}} 
+        \mathcal{P}_{S_t s'}^{a} v(s')
+    \right) \quad \forall s \in \mathcal{S}
+\]
+
+\subsubsection{Full-width Backups vs Sample Backups}
+\begin{itemize}
+    \item DP uses full width backups
+    \item For ewach backup:
+    \begin{itemize}
+        \item Every successor state and action is considered
+        \item Using the knowledge of the MDP transitions and reward function
+    \end{itemize}
+    \item DP is effective for small to medium sized MDPs
+    \item For large MDPs, DP suffers from the Bellman's curse of dimensionality. i.e.
+    the number of states grows exponentially with the number of state variables.
+    \item Thus even one backup can be very expensive.
+    \item Thus, we use sample backups, where we sample the successor state and action, using
+    the sample rewards and transitions \(\langle S, A, R, S^{\prime} \rangle \)
+    \item Advantage of sample backups:
+    \begin{itemize}
+        \item Model free: No knowledge of the MDP transitions is required
+        \item Breaks the curse of dimensionality using sampling
+        \item Cost of each backup is independent of the number of states
+    \end{itemize}
+\end{itemize} 
