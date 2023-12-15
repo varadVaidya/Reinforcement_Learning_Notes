@@ -50,7 +50,7 @@ and perform a full backup at each state. The full backup means that the value fu
 using the value function of all the successor states. The update is done in an iterative manner
 until the value function converges. The backup is a synchronous backup, i.e. the value function
 is updated using the value function of the previous iteration for all the states. The algorithm
-is given in the Algorithm \autoref{alg:iterative_policy_evaluation}.
+is given in the \autoref{alg:iterative_policy_evaluation}.
 
 
 \begin{algorithm}[H]
@@ -75,7 +75,7 @@ is given in the Algorithm \autoref{alg:iterative_policy_evaluation}.
 The policy iteration is used to find the optimal policy \(\pi_{*}\) in an MDP. The main idea
 is to use the iterative policy evaluation to evaluate the policy \(\pi\) and then improve the policy
 by acting greedily with respect to the value function \(v_{\pi}\). Thus creating a new policy
-\(\pi^{\prime}  = \text{greedy}(v_{\pi})\), such that \(\pi^{\prime} \geq \pi  \).  The algorithm is given in the Algorithm \autoref{alg:policy_iteration}.
+\(\pi^{\prime}  = \text{greedy}(v_{\pi})\), such that \(\pi^{\prime} \geq \pi  \).  The algorithm is given in the \autoref{alg:policy_iteration}.
 
 
 \begin{algorithm}[H]
