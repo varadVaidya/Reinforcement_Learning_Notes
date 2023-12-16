@@ -392,10 +392,76 @@ episode \(k\).
     \label{fig:uni-rl}
 \end{figure}
 
+\subsection{TD(\(\lambda \))}
+TD(\(\lambda \)) is a family of methods that interpolate between MC and TD.
+\subsubsection{\(n\)-step Prediction}
+Let the TD target look \(n\) steps into the future as shown in \autoref{fig:td-n}.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{figures/td-n.png}
+    \caption{\(n\)-step Prediction of TD(\(\lambda \))}
+    \label{fig:td-n}
+\end{figure}
+Consider the followuing \(n\) step retuens for \(n = 1, 2, \dots \infty \):
+\[
+    \begin{aligned}
+        n & = 1 \implies  G_t^{(1)} = R_{t+1} + \gamma V(S_{t+1}) &&\qquad \text{TD(0)} \\
+        n & = 2 \implies  G_t^{(2)} = R_{t+1} + \gamma R_{t+2} + \gamma^2 V(S_{t+2}) \\
+        \vdots \\
+        n & = \infty \implies  G_t^{(\infty)} = R_{t+1} + \gamma R_{t+2} + \dots + \gamma^{T-1}R_T
+        &&\qquad \text{MC} \\
+    \end{aligned}
+\]
+Define the \(n\)-step return as,
+\[
+    G_t^{(n)} = R_{t+1} + \gamma R_{t+2} + \dots + \gamma^{n-1}R_{t+n} + \gamma^n V(S_{t+n})
+\]
+Thus, the \(n\)-step TD update is given as,
+\[
+    V(S_t) \leftarrow V(S_t) + \alpha\left( 
+        G_t^{(n)} - V(S_t)
+     \right)
+\]
 
+\subsubsection*{Average of \(n\)-step Returns}
+We can also take the average of the \(n\)-step returns over different values of \(n\).
+As example, we can take the average of the 2-step and 4step returns as,
+\[
+    \frac{1}{2}G^{(2)} + \frac{1}{2}G^{(4)}
+\]
+This allows us to cpmine information from two different time steps. There is much better
+and efficient way to combine information from different time steps, using geometrically
+decaying weights for the \(n\)-step returns. This is called as the \(\lambda\)-return.
 
+\subsubsection{Forward View of TD(\(\lambda \))}
 
-
+The tree backup of TD(\(\lambda \)) is shown in \autoref{fig:td-lambda}.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{figures/l-return.png}
+    \caption{Tree Backup of TD(\(\lambda \))}
+    \label{fig:td-lambda}
+\end{figure}
+The \(\lambda\)-return \(G_t^\lambda \) combines all the \(n\)-step returns with 
+geometrically decaying weights. Using the weights \((1-\lambda)\lambda^{n-1}\), the return
+\(G_t^\lambda \) is given as,
+\[
+    G_t^\lambda = (1-\lambda)\sum_{n=1}^{\infty}\lambda^{n-1}G_t^{(n)}
+\]
+where the factor \((1-\lambda)\) is used to normalize the weights. Thus, the forward view
+of TD(\(\lambda \)) is given as,
+\[
+    V(S_t) \leftarrow V(S_t) + \alpha\left( 
+        G_t^\lambda - V(S_t)
+     \right)
+\]
+The weighting function is shown in \autoref{fig:lambda-weights}.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{figures/l-weights.png}
+    \caption{Weights of TD(\(\lambda \) Weighting Function)}
+    \label{fig:lambda-weights}
+\end{figure}
 
 
 
