@@ -22,7 +22,11 @@
 % Lets us import pdf directly in our tex code.
 \usepackage{pdfpages}
 % Lets us do algorithm stuff.
-\usepackage[ruled,vlined,linesnumbered]{algorithm2e}
+% \usepackage[ruled,vlined,linesnumbered]{algorithm2e}
+
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{bm}
 % Use a smiley face for our qed symbol.
 \usepackage{tikzsymbols}
 \usepackage{tikz}
@@ -708,8 +712,7 @@
 \makeatletter
 \newcommand\tcb@cnt@Definitionautorefname{Definition}
 \makeatother
-\renewcommand{\algorithmautorefname}{Algorithm}
-
+\newcommand{\algorithmautorefname}{Algorithm}
 
 %%%%%%%%%%%%%%
 % part on a seperate page

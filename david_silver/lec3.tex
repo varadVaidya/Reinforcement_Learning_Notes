@@ -1,4 +1,4 @@
-\section{Planning by Dynamic Programming}
+\section{Lecture 3 | Planning by Dynamic Programming}
 The word dynamic programming can be split into two parts:
 \begin{itemize} 
     \item Dynamic: sequential or temporal aspect of the problem
@@ -54,21 +54,22 @@ is given in the \autoref{alg:iterative_policy_evaluation}.
 
 
 \begin{algorithm}[H]
-    \SetAlgoLined
-    \KwResult{Value function \(v_{\pi}\)}
-    Initialize \(v_{\pi}(s) \in \mathbb{R}\) arbitrarily for all \(s \in \mathcal{S}\) \;
-    \While{\(v_{\pi}\) not converged}{
-        \For{\(s \in \mathcal{S}\)}{
-            \( v_{k+1}(s) \leftarrow \sum\limits_{a \in \mathcal{A}} 
-            \pi(a|s) \sum\limits_{s' \in \mathcal{S}} 
-            \left( 
-                R_{s}^{a} + \gamma \sum\limits_{s' \in \mathcal{S}}
-                P_{ss'}^{a} v_{k}(s')   
-             \right) \) \;
-        }
-    }
     \caption{Iterative Policy Evaluation}
     \label{alg:iterative_policy_evaluation}
+    \begin{algorithmic}[1]
+        \State \textbf{Input:} Value function $v_{\pi}$
+        \State \textbf{Initialize:} $v_{\pi}(s) \in \mathbb{R}$ arbitrarily for all $s \in \mathcal{S}$
+        \While{$v_{\pi}$ not converged}
+            \For{$s \in \mathcal{S}$}
+                \State $v_{k+1}(s) \leftarrow \sum\limits_{a \in \mathcal{A}} 
+                    \pi(a|s) \sum\limits_{s' \in \mathcal{S}} 
+                    \left( 
+                        R_{s}^{a} + \gamma \sum\limits_{s'' \in \mathcal{S}}
+                        P_{ss'}^{a} v_{k}(s'')   
+                     \right)$
+            \EndFor
+        \EndWhile
+    \end{algorithmic}
 \end{algorithm}
 
 \subsection{Policy Iteration}
@@ -79,22 +80,24 @@ by acting greedily with respect to the value function \(v_{\pi}\). Thus creating
 
 
 \begin{algorithm}[H]
-    \SetAlgoLined
-    \KwResult{Optimal policy \(\pi_{*}\)}
-    Initialize \(v_{\pi}(s) \in \mathbb{R}\) arbitrarily for all \(s \in \mathcal{S}\) \;
-    \While{\(v_{\pi}\) not converged}{
-        \For{\(s \in \mathcal{S}\)}{
-            \( v_{k+1}(s) \leftarrow \sum\limits_{a \in \mathcal{A}} 
-            \pi(a|s) \sum\limits_{s' \in \mathcal{S}} 
-            \left( 
-                R_{s}^{a} + \gamma \sum\limits_{s' \in \mathcal{S}}
-                P_{ss'}^{a} v_{k}(s')   
-             \right) \) \\
-             \( \pi \leftarrow \text{greedy}(v_{\pi}) \) \\
-        }
-    }
     \caption{Policy Iteration}
     \label{alg:policy_iteration}
+    \begin{algorithmic}[1]
+        \State \textbf{Input:} Value function $v_{\pi}$, Policy $\pi$
+        \State \textbf{Initialize:} $v_{\pi}(s) \in \mathbb{R}$ arbitrarily for all $s \in \mathcal{S}$
+        \While{$v_{\pi}$ not converged}
+            \For{$s \in \mathcal{S}$}
+                \State $v_{k+1}(s) \leftarrow \sum\limits_{a \in \mathcal{A}} 
+                    \pi(a|s) \sum\limits_{s' \in \mathcal{S}} 
+                    \left( 
+                        R_{s}^{a} + \gamma \sum\limits_{s'' \in \mathcal{S}}
+                        P_{ss'}^{a} v_{k}(s'')   
+                     \right)$
+                \State $\pi \leftarrow \text{greedy}(v_{\pi})$
+            \EndFor
+        \EndWhile
+        \State \textbf{Output:} Optimal policy $\pi_{*}$
+    \end{algorithmic}
 \end{algorithm}
 
 When the \autoref{alg:policy_iteration} converges, 
@@ -187,20 +190,22 @@ and intermediate value functions may not correspond to any policy.
 
 
 \begin{algorithm}[H]
-    \SetAlgoLined
-    \KwResult{Optimal value function \(v_{*}\)}
-    Initialize \(v_{\pi}(s) \in \mathbb{R}\) arbitrarily for all \(s \in \mathcal{S}\) \;
-    \While{\(v_{\pi}\) not converged}{
-        \For{\(s \in \mathcal{S}\)}{
-            \( v_{k+1}(s) \leftarrow \max\limits_{a \in \mathcal{A}} 
-            \left( 
-                R_{s}^{a} + \gamma \sum\limits_{s' \in \mathcal{S}}
-                P_{ss'}^{a} v_{k}(s')   
-             \right) \) \\
-        }
-    }
     \caption{Deterministic Value Iteration}
     \label{alg:deterministic_value_iteration}
+    \begin{algorithmic}[1]
+        \State \textbf{Input:} Value function $v_{\pi}$
+        \State \textbf{Initialize:} $v_{\pi}(s) \in \mathbb{R}$ arbitrarily for all $s \in \mathcal{S}$
+        \While{$v_{\pi}$ not converged}
+            \For{$s \in \mathcal{S}$}
+                \State $v_{k+1}(s) \leftarrow \max\limits_{a \in \mathcal{A}} 
+                    \left( 
+                        R_{s}^{a} + \gamma \sum\limits_{s' \in \mathcal{S}}
+                        P_{ss'}^{a} v_{k}(s')   
+                     \right)$
+            \EndFor
+        \EndWhile
+        \State \textbf{Output:} Optimal value function $v_{*}$
+    \end{algorithmic}
 \end{algorithm}
 
 \subsubsection{Synchrounous Dynamic Programming Algorithms}
