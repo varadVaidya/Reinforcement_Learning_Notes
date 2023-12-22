@@ -336,3 +336,35 @@ for the action value function as per the algorithm used:
         \end{aligned}
     \]
 \end{itemize}
+
+\subsubsection{Convergence of Algorithms}
+\begin{table}[H]
+    \centering
+    \caption{Convergence of Prediction Algorithms}
+    \label{tab:convergence-prediction}
+    \begin{tabular}{ccccc}
+    \hline
+    On/Off-Policy               & Algorithm   & Table Lookup & Linear     & Non Linear \\ \hline
+    \multirow{3}{*}{On Policy}  & MC          & \checkmark   & \checkmark & \checkmark \\ \cline{2-5} 
+                                & TD          & \checkmark   & \checkmark & \xmark     \\ \cline{2-5} 
+                                & Gradient TD & \checkmark   & \checkmark & \checkmark \\ \hline
+    \multirow{3}{*}{Off Policy} & MC          & \checkmark   & \checkmark & \checkmark \\ \cline{2-5} 
+                                & TD          & \checkmark   & \xmark     & \xmark     \\ \cline{2-5} 
+                                & Gradient TD & \checkmark   & \checkmark & \checkmark \\ \hline
+    \end{tabular}
+\end{table}
+\begin{table}[H]
+    \centering
+    \caption{Convergence of Control Algorithms}
+    \label{tab:convergence-control}
+    \begin{tabular}{cccc}
+    \hline
+    Algorithm           & Table Lookup & Linear       & Non Linear \\ \hline
+    MC                  & \checkmark   & (\checkmark) & \xmark     \\ \hline
+    SARSA               & \checkmark   & (\checkmark) & \xmark     \\ \hline
+    Q Learning          & \checkmark   & \xmark       & \xmark     \\ \hline
+    Gradient Q Lwarning & \checkmark   & \checkmark   & \xmark     \\ \hline
+    \end{tabular}
+    \end{table}
+
+\subsection{Batch Methods}
