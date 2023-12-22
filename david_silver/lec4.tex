@@ -463,21 +463,57 @@ The weighting function is shown in \autoref{fig:lambda-weights}.
     \label{fig:lambda-weights}
 \end{figure}
 
+\subsubsection{Eligibility Traces}
+The eligibility trace \(E_t(s)\) is a measure of the credit assignment problem. 
+Consisit of the followiung two components:
+\begin{itemize}
+    \item \emph{Frequency heuristics}: assign the credit of reward or the bellamn error to
+    the states that are visited more frequently.
+    \item \emph{Recency heuristics}: assign the credit of reward or the bellamn error to
+    the states that are visited more recently.
+\end{itemize}
+Eligibility traces combine both the frequency and recency heuristics, and is defined as,
+\[
+    \begin{aligned}
+        E_0(s) &= 0 \\
+        E_t(s) &= \gamma\lambda E_{t-1}(s) + \bm{1}(S_t = s)      
+    \end{aligned}
+\]
+Thus, when we see some Bellman error or reward, we update the value function in the proportion
+of the eligibility trace. 
 
 
+\subsubsection{Backward View of TD(\(\lambda \))}
+The algorithm for the backward view of TD(\(\lambda \)) is roughly as follows:
+\begin{itemize}
+    \item Keep an eligibilty trace for every state \(s\)
+    \item Update value \(V(s)\) for all states \(s\) visited in the episode, 
+    in proportion to the TD-error \(\delta_t\) and the eligibility trace \(E_t(s)\).
+    \[
+        \begin{aligned}
+            \delta _t &= R_{t+1} + \gamma V(S_{t+1}) - V(S_t) \\
+            V(s) &\leftarrow V(s) + \alpha\delta_t E_t(s) \quad \forall s \in S_t
+        \end{aligned}
+    \] 
+\end{itemize}
+Intuivly the TD-error is being broadcasted into the past, and thus the value function is being
+updated in the proportion of the eligibility trace and the TD-error. 
 
+\subsubsection*{TD(\(\lambda \)) and TD(0)}
+When \(\lambda = 0\), only the current state is being updated:
+\[
+    \begin{aligned}
+        E_t(s) &= \bm{1}(S_t = s) \\
+        V(s) &\leftarrow V(s) + \alpha\delta_t E_t(s) \quad \forall s \in S_t \\
+        V(S_t) &\leftarrow V(S_t) + \alpha\delta_t
+    \end{aligned}  
+\]
+which is equivalent to the TD(0) update.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+\subsubsection*{TD(\(\lambda \)) and MC}
+When \(\lambda = 1\), the credit is defferend untill the end of the episode. Consider the 
+case of episodic environment with offline update, then the total update for TD(1) is the same
+as the total update for MC methods.
+\begin{note}
+    DID NOT UNDERSTAND THIS PART.
+\end{note}
