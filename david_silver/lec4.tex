@@ -5,11 +5,11 @@ of an unknown MDP.
 \subsection{Monte Carlo Reinforcement Learning}
 Monte Carlo (MC) methods learn directly from the episodes of experience collected by
 the agent, by actually interacting with the environment. MC methods only require
-experience, not a model of the environment, thus requing no knowledge of the MPD transition 
-and or reward functions. MC metods learn from the complete episodes,
-i.e. they dont use \emph{boootstrapping} (updating estimates based 
+experience, not a model of the environment, thus requiring no knowledge of the MDP transition 
+and or reward functions. MC methods learn from the complete episodes,
+i.e. they dont use \emph{bootstrapping} (updating estimates based 
 on other estimates). The main idea behind the MC methods is that the value
-function is estimated as the mean return (over all the episiodes).
+function is estimated as the mean return (over all the episodes).
 
 \begin{note}
     MC methods can be only applied to episodic MDPs, i.e. 
@@ -34,7 +34,7 @@ expected return when starting in \(s\) and following \(\pi\).
     v_{\pi}(s) = \mathbb{E}_{\pi}[G_t | S_t = s]
 \]
 The value function \(v_{\pi}(s)\) is estimated as the mean return (over all the
-episodes). Thus, the MC policy evaluation useus empitical mean return instead of the
+episodes). Thus, the MC policy evaluation uses empirical mean return instead of the
 expected return.
 
 \subsubsection{First-Visit MC Policy Evaluation}
@@ -146,9 +146,9 @@ is given as,
     \end{aligned}
 \] 
 Thus, the mean of the sequence can be computed incrementally, using the previous
-mean and the current element of the sequence. All the main algortihms that we will see in
-this lecture follow this incremental update idea. That is to udate the mean (value function)
-by pushing the surrent estimate to the previous estimate using the error in the current
+mean and the current element of the sequence. All the main algorithms that we will see in
+this lecture follow this incremental update idea. That is to update the mean (value function)
+by pushing the current estimate to the previous estimate using the error in the current
 estimate and the actual value obtained.
 
 \subsubsection{Incremental Monte Carlo Updates}
@@ -180,9 +180,9 @@ Thus, the update rule becomes,
 \subsection{Temporal Difference Learning}
 Similar to the MC methods, the Temporal Difference (TD) methods learn directly from the
 episodes of experience collected by the agent, by actually interacting with the environment.
-TD methods only require experience, not a model of the environment, thus requing no knowledge
-of the MPD transition and or reward functions. TD methods learn from the incomplete episodes,
-i.e. they use \emph{boootstrapping} (updating estimates based on other estimates). The main
+TD methods only require experience, not a model of the environment, thus requiring no knowledge
+of the MDP transition and or reward functions. TD methods learn from the incomplete episodes,
+i.e. they use \emph{bootstrapping} (updating estimates based on other estimates). The main
 idea behind the TD updates the guess towards the guess.
 
 \subsubsection*{MC vs TD}
@@ -223,13 +223,13 @@ The TD error is defined as,
 \end{itemize}
 
 \subsubsection*{Bias/Variance Trade-off}
-The retuen \(G_t = R_{t+1} + \gamma R_{t+2} + \dots + \gamma^{T-1}R_T\) is an \emph{unbiased}
+The return \(G_t = R_{t+1} + \gamma R_{t+2} + \dots + \gamma^{T-1}R_T\) is an \emph{unbiased}
 estimate of \(v_{\pi}(S_t)\). Thus, \(\mathbb{E}[G_t | S_t = s] = v_{\pi}(s)\). Moreover,
 the True TD Target \(R_{t+1} + \gamma v_\pi (S_{t+1})\) is also an unbiased estimate of
 \(v_{\pi}(S_t)\). 
 But, the TD Target \(R_{t+1} + \gamma V(S_{t+1})\) is a \emph{biased} estimate of \(v_{\pi}(S_t)\).
 
-One addvanteage that TD has in comparison to MC is that the TD target has lower variance
+One advantage that TD has in comparison to MC is that the TD target has lower variance
 compared to the return. This can be seen from the fact that the return depends 
 on many random actions, transitions and rewards, while the TD target depends on only one
 random action, transition and reward.
@@ -402,7 +402,7 @@ Let the TD target look \(n\) steps into the future as shown in \autoref{fig:td-n
     \caption{\(n\)-step Prediction of TD(\(\lambda \))}
     \label{fig:td-n}
 \end{figure}
-Consider the followuing \(n\) step retuens for \(n = 1, 2, \dots \infty \):
+Consider the following \(n\) step returns for \(n = 1, 2, \dots \infty \):
 \[
     \begin{aligned}
         n & = 1 \implies  G_t^{(1)} = R_{t+1} + \gamma V(S_{t+1}) &&\qquad \text{TD(0)} \\
@@ -429,7 +429,7 @@ As example, we can take the average of the 2-step and 4step returns as,
 \[
     \frac{1}{2}G^{(2)} + \frac{1}{2}G^{(4)}
 \]
-This allows us to cpmine information from two different time steps. There is much better
+This allows us to combine information from two different time steps. There is much better
 and efficient way to combine information from different time steps, using geometrically
 decaying weights for the \(n\)-step returns. This is called as the \(\lambda\)-return.
 
@@ -465,7 +465,7 @@ The weighting function is shown in \autoref{fig:lambda-weights}.
 
 \subsubsection{Eligibility Traces}
 The eligibility trace \(E_t(s)\) is a measure of the credit assignment problem. 
-Consisit of the followiung two components:
+Consist of the following two components:
 \begin{itemize}
     \item \emph{Frequency heuristics}: assign the credit of reward or the bellamn error to
     the states that are visited more frequently.
@@ -486,7 +486,7 @@ of the eligibility trace.
 \subsubsection{Backward View of TD(\(\lambda \))}
 The algorithm for the backward view of TD(\(\lambda \)) is roughly as follows:
 \begin{itemize}
-    \item Keep an eligibilty trace for every state \(s\)
+    \item Keep an eligibility trace for every state \(s\)
     \item Update value \(V(s)\) for all states \(s\) visited in the episode, 
     in proportion to the TD-error \(\delta_t\) and the eligibility trace \(E_t(s)\).
     \[
@@ -496,7 +496,7 @@ The algorithm for the backward view of TD(\(\lambda \)) is roughly as follows:
         \end{aligned}
     \] 
 \end{itemize}
-Intuivly the TD-error is being broadcasted into the past, and thus the value function is being
+Intuitively the TD-error is being broadcasted into the past, and thus the value function is being
 updated in the proportion of the eligibility trace and the TD-error. 
 
 \subsubsection*{TD(\(\lambda \)) and TD(0)}
@@ -511,7 +511,7 @@ When \(\lambda = 0\), only the current state is being updated:
 which is equivalent to the TD(0) update.
 
 \subsubsection*{TD(\(\lambda \)) and MC}
-When \(\lambda = 1\), the credit is defferend untill the end of the episode. Consider the 
+When \(\lambda = 1\), the credit is deferred until the end of the episode. Consider the 
 case of episodic environment with offline update, then the total update for TD(1) is the same
 as the total update for MC methods.
 \begin{note}
