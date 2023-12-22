@@ -6,7 +6,7 @@
   \item Off Policy Learning - Learn about policy \(\pi \) from experience sampled from \(\mu \).
 \end{itemize}
 
-\subsection{On Pilocy Monte Carlo Control}
+\subsection{On Policy Monte Carlo Control}
 
 \begin{figure}[H]
     \begin{minipage}{0.5\textwidth}
@@ -25,18 +25,18 @@
   \end{figure}
 
 One of the simple ideas is to use Monte Carlo Policy Evaluation and Greedy Policy Improvement.
-BUt this quickly runs into problems:
+But this quickly runs into problems:
 \begin{itemize}
   \item Policy Evaluation - Monte Carlo Policy Evaluation with value function, requires
   the model of the MDP.
   \item Policy Improvement - Greedy Policy Improvement faces the issue of the
   expectation of the entire state space.
 \end{itemize}
-So, greefy policy improvemnent over \(V(s)\) requires model of the MDP.
+So, greedy policy improvement over \(V(s)\) requires model of the MDP.
 \[
   \pi'(s) = \argmax_{a \in \mathcal{A}(s)} \mathcal{R}^a_s + \mathcal{P} ^a_{ss'} V(s')
 \]
-replacing the value function with stae action value function, the policy evaluation is model
+replacing the value function with state action value function, the policy evaluation is model
 free.
 \[
   \pi'(s) = \argmax_{a \in \mathcal{A}(s)} Q(s,a)
@@ -71,7 +71,7 @@ Thus all \(m\) actions have a non-zero probability of being selected.
   Therefore from policy improvement theorem, \(v_{\pi'}(s) \geq v_\pi(s)\).
 \end{proof} 
 
-Thus the Monte Carlo Control can be summarissed as follows:
+Thus the Monte Carlo Control can be summarised as follows:
 \begin{figure}[H]
   \begin{minipage}{0.5\textwidth}
     Every episode:
@@ -138,7 +138,7 @@ The algortihm can be described as:
 \end{theorem}
 
 \subsection{SARSA(\(\lambda \))}
-Use the natureal idea to replace MC wtth TD(\(\lambda\)). So we will be applying,
+Use the natural idea to replace MC with TD(\(\lambda\)). So we will be applying,
 TD to the action value function, \(Q(s,a)\), by using the \(\epsilon\)-greedy policy
 improvement. The policy is updated at every time step.
 
@@ -255,7 +255,7 @@ state-action pair, \(E_t(s,a)\). The eligibility trace is updated as follows:
     E_t(s,a) &= \gamma \lambda E_{t-1}(s,a) + \bm{1}(S_t = s, A_t = a)
   \end{aligned}
 \]
-Tus, \(Q(s,a)\) is updates for wevery state \(s\) and action \(a\) in proportion to the TD
+Thus, \(Q(s,a)\) is updates for every state \(s\) and action \(a\) in proportion to the TD
 error \(\delta _t\) and the eligibility trace \(E_t(s,a)\).
 \[
   \begin{aligned}
@@ -315,16 +315,16 @@ Estimate the expectation of a different distribution:
   \end{aligned}
 \]
 \begin{note}
-  Wathc this youtube video for a better understanding of importance sampling:
+  Watch this YouTube video for a better understanding of importance sampling:
   \href{https://www.youtube.com/watch?v=C3p2wI4RAi8}{Importance Sampling}
 \end{note}
 
-\subsubsection{Imnporatnce Sampling for Off Policy Monte Carlo}
-Imporatnce Sampling in Monte Carlo off policy learning uses the retuends generated 
-from \(\mu\) to evaluest teh policy \(\pi\). The returns are weighted by the similarity
+\subsubsection{Importance Sampling for Off Policy Monte Carlo}
+Importance Sampling in Monte Carlo off policy learning uses the returns generated 
+from \(\mu\) to evaluate the policy \(\pi\). The returns are weighted by the similarity
 between two policies.
 
-Mulitplying the importance sampling corrections along the whole episode, we get:
+Multiplying the importance sampling corrections along the whole episode, we get:
 \[
   \begin{aligned}
     G_t^{\pi/\mu}  &= R_{t+1} + \gamma R_{t+2} + \dots + \gamma^{T-t-1} R_{T} \\
@@ -339,7 +339,7 @@ Updating the value towards the corrected return, we get:
   \right]
 \]
 Important point to note that the importance sampling cannot be used if \(\mu =0\) when 
-\(\pi \neq 0\). Also, imporatnce sampling can increase the variance of the returns. And in
+\(\pi \neq 0\). Also, importance sampling can increase the variance of the returns. And in
 practice the Monte Carlo off policy learning is not used and is a really bad idea.
 
 \subsubsection{Off Policy TD Learning}
@@ -350,7 +350,7 @@ as follows:
   \item Use TD target generated from \(\mu\) to evaluate \(\pi\).
   \item Weight the TD target by the similarity between two policies given by the importance
   sampling.
-  \item Thus we only need singel importave sampling correction:
+  \item Thus we only need single importance sampling correction:
   \[
     V(S_t) \leftarrow V(S_t) + \alpha \left[
     \frac{\pi(A_t|S_t)}{\mu(A_t|S_t)} \left( 
@@ -358,8 +358,8 @@ as follows:
     \right) 
     \right]
   \]
-\item Thisi methiod has much lower varianvce compared to the Monte Carlo off policy learning.
-\item The plocies only need to be siliar over a single time step
+\item This method has much lower variance compared to the Monte Carlo off policy learning.
+\item The polices only need to be similar over a single time step
 \end{itemize}
 
 \subsection{Q-Learning}
@@ -368,7 +368,7 @@ To make use of thew action values to do off policy learning to avoid the use of 
 sampling.
 
 The next action is chosen using behaviour policy \(A_{t+1} \sim \mu(\cdot|S_{t})\). 
-But we also consider alternative successort action \(A' \sim \pi(\cdot|S_{t+1})\),
+But we also consider alternative successor action \(A' \sim \pi(\cdot|S_{t+1})\),
 and update \(Q(S_t,A_t)\) towards the value of the alternative successor action:
 \[
     Q(S_t, A_t) \leftarrow Q(S_t, A_t) + \alpha \left[ 
@@ -383,7 +383,7 @@ We allow both the behaviour and the target policies to improve. So the target po
   \pi(S_{t+1}) = \argmax_{a^{\prime}} Q(S_{t+1}, a^{\prime})
 \]
 and the behaviour policy \(\mu\) is \(\epsilon\)-greedy wrt \(Q(s,a)\)
-Thus, behaiour plociy is also goint to explore the part of the state space that the target
+Thus, behaviour policy is also going to explore the part of the state space that the target
 policy is not exploring. Thus, the Q-learning target then simplifies to:
 \[
   \begin{aligned}
@@ -412,7 +412,7 @@ Thus, the Q-learning update is given by:
 \begin{theorem}[Convergence of Q-learning]
   Q-learning control converges to the optimal action-value function, \(Q(s,a) \to q_\star(s,a)\),
 \end{theorem}
-The algorith for Q-learning is given by:
+The algorithm for Q-learning is given by:
 \begin{algorithm}[H]
   \caption{Q-learning}
   \label{alg:q-learning}
