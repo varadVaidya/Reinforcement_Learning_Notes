@@ -1,0 +1,192 @@
+\section{Lecture 7 | Policy Gradient}
+The main idea is to directly parametrise the policy
+\[
+\pi_\theta(a|s) = \mathbb{P}[a|s,\theta]  
+\]
+instead of derviing the policy from the value functions.
+
+\subsubsection*{Advantages and Disadvantages of Policy Gradient}
+\begin{itemize}
+    \item \textbf{Advantages}
+    \begin{itemize}
+        \item Better convergence properties
+        \item Effective in high-dimensional or continuous action spaces
+        \item Can learn stochastic policies
+    \end{itemize}
+    \item \textbf{Disadvantages}
+    \begin{itemize}
+        \item Typically converge to a local rather than global optimum
+        \item Evaluating a policy is typically inefficient and high variance
+    \end{itemize}
+\end{itemize}
+
+\subsection{Policy Search}
+The goal is to find the policy \(\pi _\theta (s,a) \) with parameters \(\theta\),
+fnd the best parameters \(\theta\). The quality of a policy \(J(\theta)\) is defined by:
+
+\begin{itemize}
+    \item In episodic enviroments we can use the start value:
+    \[
+        J(\theta) = V^{\pi_\theta}(s_0) = \mathbb{E}_{\pi_\theta}[v_{\pi_\theta}(s_0)]  
+    \]
+    \item In continuing enviroments we can use the average value:
+    \[
+        J(\theta) = \sum_{s \in \mathcal{S}} d^{\pi_\theta}(s) V^{\pi_\theta}(s)
+    \]
+    \item we can also use the average reward per time-step:
+    \[
+        J(\theta) = \sum_{s \in \mathcal{S}} d^{\pi_\theta}(s) \sum_{a \in \mathcal{A}}
+         \pi_\theta(a|s) \mathcal{R}^a_s
+    \]
+\end{itemize}
+where \(d^{\pi_\theta}(s)\) is the stationary distribution of the Markov chain for \(\pi_\theta\).
+
+Since the policy based reinforcement learning is an optimisation probelm we can use
+the approaches from optimisation. We will use the gradient desdcent and its extensions 
+to find the best parameters \(\theta\).
+
+\subsection{Finite Difference Policy Gradient}
+Let \(J(\theta)\) be any policy objective function. THe policy gradient algorthms seach for a local
+maximum of \(J(\theta)\) by following the gradient of \(J(\theta)\) w.r.t. \(\theta\).
+\[
+    \Delta \theta = \alpha \nabla_\theta J(\theta)
+\] 
+where \(\nabla _\theta J(\theta)\) is the policy gradient and \(\alpha\) is the step size.
+\[
+    \nabla_\theta J(\theta) = \begin{bmatrix}
+        \frac{\partial J(\theta)}{\partial \theta_1} \\
+        \frac{\partial J(\theta)}{\partial \theta_2} \\
+        \vdots \\
+        \frac{\partial J(\theta)}{\partial \theta_n} \\
+    \end{bmatrix}
+\] 
+
+\subsubsection{Computing the Policy Gradient by Finite Differences}
+To evaluate the policy gradient of \(\pi _\theta (s,a) \) we can use the finite difference method.
+\begin{itemize}
+    \item For each dimension \(k \in [1,n]\) of the parameter vector \( \theta \) estimate
+    the partial derivative of \(J(\theta)\) w.r.t. \(\theta_k\) by finite differences:
+    \[
+        \frac{\partial J(\theta)}{\partial \theta_k} \approx \frac{J(\theta + \epsilon \hat{k}) - J(\theta)}{\epsilon}
+    \]
+    where \(\hat{k}\) is a unit vector in the direction of the \(k\)-th axis.
+\end{itemize}
+This method uses \(n\) evaluations of the policy \( \pi _\theta (s,a) \) to estimate the policy gradient,
+where \(n\) is the number of parameters in \(\theta\). This method is very inefficient but simple to implement,
+and works for arbitrary policies, even if the policies are not differentiable.
+
+\subsection{Monte-Carlo Policy Gradient (REINFORCE)}
+Here we calculate the policy gradient analytically. Assume that the policy is differentiable
+wherever it is non-zero, and we can compute the gradient \( \nabla_\theta \pi_\theta(s,a) \).
+
+We are going to use the concept called likelihood ratio. Let \(p(x)\) and \(q(x)\) be two probability
+distributions over the same random variable \(x\). The likelihood ratio is defined as:
+\[
+    L(x) = \frac{p(x)}{q(x)}
+\]
+The likelihood ratio is useful because it is the gradient of the log probability:
+\[
+    \nabla_x \log p(x) = \frac{\nabla_x p(x)}{p(x)} = \frac{p(x)}{p(x)} \frac{\nabla_x p(x)}{p(x)} = \frac{\nabla_x p(x)}{p(x)} = \nabla_x \log p(x)
+\]
+Thus, applying the likelihood ratio trick to the policy gradient:
+\[
+    \begin{aligned}
+        \nabla _\theta  \pi _\theta (s,a) &= \pi _\theta (s,a) \frac{\nabla _\theta  \pi _\theta (s,a)}
+        {\pi _\theta (s,a)} \\&= \pi _\theta (s,a) \nabla _\theta \log \pi _\theta (s,a)
+    \end{aligned}
+\]
+Thus from the literature of statistics we define the score function as:
+\[
+    \nabla _\theta \log \pi _\theta (s,a)
+\]
+\begin{example}[Softmax Policy]
+    The softmax policy weights the action using linear combinmation of features \(\phi (s,a)^{\top} \theta\),
+    where the probability of taking action is proportional to the exponentiated weight:
+    \[
+        \pi _\theta (s,a) \propto e^{\phi (s,a)^{\top} \theta}
+    \]
+    Then the score function is defined as:
+    \[
+        \nabla _\theta \log \pi _\theta (s,a) = \phi (s,a) - \mathbb{E}_{\pi_\theta}[\phi (s,\cdot)]  
+    \]
+    The derivation of the above is:
+    \[
+        \begin{aligned}
+            \pi_\theta(s,a) &= \frac{e^{\phi(s,a)^{\top} \theta}}{\sum\limits_{b \in \mathcal{A}} 
+            e^{\phi(s,b)^{\top} \theta}} \\
+            \implies \nabla_\theta \log \pi_\theta(s,a) &= \nabla_\theta \log e^{\phi(s,a)^{\top} \theta} -
+            \nabla_\theta \log\left(   
+             \sum\limits_{b \in \mathcal{A}} e^{\phi(s,b)^{\top} \theta} \right)\\
+                &= \nabla _\theta \left( 
+                    \phi(s,a)^{\top} \theta 
+                 \right) - \frac{\nabla_\theta \left( 
+                    \sum\limits_{b \in \mathcal{A}} e^{\phi(s,b)^{\top} \theta}
+                    \right)}{\sum\limits_{b \in \mathcal{A}} e^{\phi(s,b)^{\top} \theta}} \\
+                &= \phi(s,a) - \frac{\sum\limits_{b \in \mathcal{A}} \phi(s,b) e^{\phi(s,b)^{\top} \theta}}
+                {\sum\limits_{b \in \mathcal{A}} e^{\phi(s,b)^{\top} \theta}} \\
+                &= \phi(s,a) - \sum\limits_{b \in \mathcal{A}} \pi_\theta(s,b) \phi(s,b) \\
+        \end{aligned}
+    \]
+    which is the difference between the feature vector of the action and the expected feature vector
+\end{example}
+
+\begin{example}[Gaussian Policy]
+    In continous action spaces, a gaussian policy is often used. The mean of the gaussian is given by
+    a linear combination of features \(\mu(s) = \phi(s)^{\top} \theta\), and the variance is fixed or
+    can be parametrised as well. The probability of taking action \(a\) is given by \(a \sim 
+    \mathcal{N}(\mu(s),\sigma^2)\). Then the score function is defined as:  
+    \[
+        \nabla _\theta \log \pi _\theta (s,a) = \frac{(a - \mu(s)) \phi(s)}{\sigma^2}
+    \]
+\end{example}
+
+\subsubsection*{One Step MDPs}
+Consider a simple calss of one step MDPs i.e. starting in the state \(s \sim d(s)\),
+and terminating after one timestep with reward \(r = R(s,a)\). 
+
+Using likelihood ration to compute the policy gradienbt we have:
+\[
+    \begin{aligned}
+        J(\theta) &= \mathbb{E} _{\pi_\theta}[r] \\
+        &= \sum_{s \in \mathcal{S}} d(s) \sum_{a \in \mathcal{A}} \pi_\theta(a|s) \mathcal{R}(s,a) \\
+        \nabla_\theta J(\theta) &= \sum_{s \in \mathcal{S}} d(s) 
+        \sum_{a \in \mathcal{A}} \pi _\theta (a|s) \nabla_\theta \log \pi _\theta (a|s) \mathcal{R}(s,a) \\
+        &= \mathbb{E}_{\pi_\theta}
+        \left[   
+        \nabla_\theta \log \pi_\theta(a|s) r\right]
+    \end{aligned}
+\]
+To extend this to multi-step MDPs we can use the policy gradient theorem. The policy grafient theorem
+generalises the likelihood ratio trick to multi-step MDPs. It
+replaces the instantaneous reward \(r\) with the long-term value \(Q^{\pi_\theta}(s,a)\).
+\begin{theorem}[Policy Gradient Theorem]
+    For any differentiable policy \(\pi_\theta(s,a)\), and for any of the policy objective
+    functions \(J(\theta)\) defined above, the policy gradient is given by:
+    \[
+        \nabla_\theta J(\theta) = \mathbb{E}_{\pi_\theta} \left[ 
+            \nabla_\theta \log \pi_\theta(a|s) Q^{\pi_\theta}(s,a)
+        \right]
+    \]
+\end{theorem}
+
+\subsubsection{REINFORCE Algorithm}
+The REINFORCE algorith updates the policy parameters by stochastic gradient ascent on the policy,
+using return \(v_t\) as an unbiased sample of \(Q^{\pi_\theta}(s,a)\).
+\[
+    \Delta \theta = \alpha \nabla_\theta \log \pi_\theta(a|s) v_t
+\] 
+Thus, the algorithm for the REINFORCE is given in \autoref{alg:reinforce}.
+\begin{algorithm}[htpb]
+    \caption{REINFORCE}
+    \label{alg:reinforce}
+    \begin{algorithmic}[1]
+        \State Initialise policy parameters \(\theta\)
+        \For{each episode}
+            \State Generate an episode \(s_0,a_0,r_1,\dots,s_{T-1},a_{T-1},r_T\)
+            \For{\(t = 0,1,\dots,T-1\)}
+                \State \(G \leftarrow\) return from timestep \(t\)
+                \State \(\theta \leftarrow \theta + \alpha G \nabla_\theta \log \pi_\theta(a_t|s_t)\)
+            \EndFor
+        \EndFor
+    \end{algorithmic}
+\end{algorithm}
