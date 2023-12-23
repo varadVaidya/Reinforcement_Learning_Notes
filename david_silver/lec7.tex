@@ -176,7 +176,7 @@ using return \(v_t\) as an unbiased sample of \(Q^{\pi_\theta}(s,a)\).
     \Delta \theta = \alpha \nabla_\theta \log \pi_\theta(a|s) v_t
 \] 
 Thus, the algorithm for the REINFORCE is given in \autoref{alg:reinforce}.
-\begin{algorithm}[htpb]
+\begin{algorithm}[H]
     \caption{REINFORCE}
     \label{alg:reinforce}
     \begin{algorithmic}[1]
@@ -190,3 +190,176 @@ Thus, the algorithm for the REINFORCE is given in \autoref{alg:reinforce}.
         \EndFor
     \end{algorithmic}
 \end{algorithm}
+
+\subsection{Actor Critic Policy Gradient}
+Monte-Carlo policy gradient methods suffer from high variance. The variance can be reduced by
+using a critic to estimate the action-value function:
+\[
+    Q_w(s,a) \approx Q^{\pi_\theta}(s,a)  
+\]
+Actor critic methods main two set of parameters: the actor parameters \(\theta\) that are updated
+in the direction suggested by the policy gradient, and the critic parameters \(w\) that are updated
+by policy evalution.
+Thus, actor critic algorithms floow an approximate policy gradient:
+\[
+    \nabla_\theta J(\theta) \approx \mathbb{E}_{\pi_\theta} \left[ 
+        \nabla_\theta \log \pi_\theta(a|s) Q_w(s,a)
+    \right]
+\]
+\[
+    \Delta \theta = \alpha \nabla_\theta \log \pi_\theta(a|s) Q_w(s,a)  
+\]
+Since crtic is just policy evalution, we can use the tools from the policy evalution to estimate
+the action-value function. An algorith using linear function value approximation as the function
+approximator is given in \autoref{alg:actor-critic}. This implies that critic updates \(\mathbf{w}\)
+with linear TD, and the actor updates \(\theta\) with policy gradient.
+\begin{algorithm}[H]
+    \caption{Actor Critic with Linear Function Approximation}
+    \label{alg:actor-critic}
+    \begin{algorithmic}[1]
+        \State Initialise policy parameters \(\theta\) and value function parameters \(\mathbf{w}\)
+        \For{each episode}
+            \State Initialise \(s\)
+            \Repeat
+                \State \(a \sim \pi_\theta(\cdot|s)\)
+                \State Take action \(a\), observe \(r,s'\)
+                \State \(\delta \leftarrow r + \gamma \mathbf{w}^{\top} \phi(s') - \mathbf{w}^{\top} \phi(s)\)
+                \State \(\mathbf{w} \leftarrow \mathbf{w} + \alpha \delta \nabla_\mathbf{w} \phi(s)\)
+                \State \(\theta \leftarrow \theta + \beta \delta \nabla_\theta \log \pi_\theta(a|s)\)
+                \State \(s \leftarrow s'\)
+            \Until{terminal}
+        \EndFor
+    \end{algorithmic}
+\end{algorithm} 
+
+\subsubsection{Bias in Actor Critic Algorithms}
+Approximimating the policy gradient introduces bias in the policy gradient estimate. The bias
+can be reduced by using a compatible function approximator. A function approximator is compatible
+if the policy gradient is a gradient of the performance measure w.r.t. the parameters of the
+function approximator.
+
+\begin{theorem}[Compatible Function Approximator Theorem]
+If the followinf conditions are satisfied:
+\begin{itemize}
+    \item Value functijn approximator is compatible with the policy:
+    \[
+        \nabla_w Q_w(s,a) = \nabla_\theta \log \pi_\theta(a|s)        
+    \]
+    \item The value function paramters \(w\) minimise the mean-squared error:
+    \[
+        \mathbb{E}_{\pi_\theta} \left[ 
+            \left( Q_w(s,a) - Q_w(s,a) \right)^2
+        \right]
+    \]
+\end{itemize}
+Then the policy gradient is exact:
+\[
+    \nabla_\theta J(\theta) = \mathbb{E}_{\pi_\theta} \left[ 
+        \nabla_\theta \log \pi_\theta(a|s) Q_w(s,a)
+    \right]
+\]
+\end{theorem}
+\begin{proof}
+    If \(w\) is choosen to minimise the mean-squared error, then the gradient of the mean-squared
+    wrt \(w\) is zero:
+    \[
+        \begin{aligned}
+            0 &= \nabla _w \epsilon \\
+            &= \mathbb{E} _{\pi_\theta} \left[ 
+                (Q^{\pi_\theta}(s,a) - Q_w(s,a)) \nabla_w Q_w(s,a)
+            \right] \\
+            &= \mathbb{E} _{\pi_\theta} \left[ 
+                (Q^{\pi_\theta}(s,a) - Q_w(s,a)) \nabla_\theta \log \pi_\theta(a|s)
+            \right] \\
+        \end{aligned}
+    \]
+    \[
+        \implies \mathbb{E} _{\pi_\theta} \left[ 
+            Q^{\pi_\theta}(s,a) \nabla_\theta \log \pi_\theta(a|s)
+        \right] = \mathbb{E} _{\pi_\theta} \left[
+            Q_w(s,a) \nabla_\theta \log \pi_\theta(a|s)
+        \right]
+    \]
+    Thus, the policy gradient is exact. and can be substituted directly into the policy gradient
+    \[
+        \nabla J(\theta) = \mathbb{E} _{\pi_\theta} \left[ 
+            Q_w(s,a) \nabla_\theta \log \pi_\theta(a|s)
+        \right]
+    \]
+\end{proof}
+
+
+\subsubsection{Reducing the Variance using a Baseline}
+We can subtract a baseline function \(B(s)\) from the policy gradient withou changing the direction 
+of the gradient ascent. In other words, the baseline function does not change the expected value
+of the policy gradient.
+\[
+    \begin{aligned}
+        \mathbb{E}_{\pi_\theta} \left[ 
+            \nabla_\theta \log \pi_\theta(a|s) B(s)
+        \right] &= \sum_{s \in \mathcal{S}} d^{\pi_\theta}(s) \sum_{a \in \mathcal{A}}
+        \nabla_\theta \pi_\theta(a|s) B(s) \\
+        &= \sum_{s \in \mathcal{S}} d^{\pi_\theta}(s) B(s) \sum_{a \in \mathcal{A}}
+        \nabla_\theta \pi_\theta(a|s) \\
+        &= \sum_{s \in \mathcal{S}} d^{\pi_\theta}(s) B(s) \nabla_\theta \sum_{a \in \mathcal{A}}
+        \pi_\theta(a|s) \\
+        &= \sum_{s \in \mathcal{S}} d^{\pi_\theta}(s) B(s) \nabla_\theta 1 \\
+        &= 0
+    \end{aligned}
+\]
+\begin{note}
+    Refer this link for an extra informal proof: 
+    \href{https://ai.stackexchange.com/questions/28568/why-adding-a-baseline-
+    doesnt-affect-the-policy-gradient}{StackExchange}
+\end{note}
+
+A good baseline finction is the state value function \(B(s) = V^{\pi_\theta}(s)\). 
+Thus, the policy gradient can be rewritten using the advantage function \(A^{\pi_\theta}(s,a)\):
+\[
+    \begin{aligned}
+        A^{\pi_\theta}(s,a) &= Q^{\pi_\theta}(s,a) - V^{\pi_\theta}(s)\\
+        \nabla_\theta J(\theta) &= \mathbb{E}_{\pi_\theta} \left[ 
+            \nabla_\theta \log \pi_\theta(a|s) A^{\pi_\theta}(s,a)
+        \right]
+    \end{aligned}
+\]
+Intuitively, the advantage function measures how much better an action is than the average action.
+
+\subsubsection{Estimating the Advantage Function}
+The advantage function can significantly reduce the variance of the policy gradient. So the
+critic can be used to estimate the advantage function. One way to estimate the advantage function
+is to estimate the action-value function and the state-value function, and then compute the difference.
+\[
+\begin{aligned}
+    V_v(s) &\approx V^{\pi_\theta}(s) \\
+    Q_w(s,a) &\approx Q^{\pi_\theta}(s,a) \\
+    A(s,a) &= Q_w(s,a) - V_v(s)
+\end{aligned}
+\]
+Both set of parameters \(v\) and \(w\) can be updated by using say TD(0) learning.
+
+Another way of estimating the advantage function is to use the TD error. The 
+main idea is that for the true value fumction \(V^{\pi_\theta}(s)\) the TD error \(\delta ^{\pi_\theta}\)
+is an unbiased estimate of the advantage function \(A^{\pi_\theta}(s,a)\).
+\[
+    \begin{aligned}
+        \delta ^{\pi_\theta} &= r + \gamma V^{\pi_\theta}(s') - V^{\pi_\theta}(s) \\
+        \implies \mathbb{E}_{\pi_\theta} \left[ 
+            \delta ^{\pi_\theta} | s,a
+        \right] &= \mathbb{E}_{\pi_\theta} \left[ 
+            r + \gamma V^{\pi_\theta}(s') - V^{\pi_\theta}(s) | s,a
+        \right] \\
+        &= Q^{\pi_\theta}(s,a) - V^{\pi_\theta}(s) \\
+        &= A^{\pi_\theta}(s,a)
+    \end{aligned}
+\]
+Thus, allowing the use of TD error to compute the policy gradient:
+\[
+    \nabla_\theta J(\theta) = \mathbb{E}_{\pi_\theta} \left[ 
+        \nabla_\theta \log \pi_\theta(a|s) \delta ^{\pi_\theta}
+    \right]
+\]
+In practive we can use an approximate TD error \(\delta _v\) to estimate the advantage function:
+\[
+    \delta _v = r + \gamma V_v(s') - V_v(s)
+\]
