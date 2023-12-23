@@ -367,4 +367,101 @@ for the action value function as per the algorithm used:
     \end{tabular}
     \end{table}
 
-\subsection{Batch Methods}
+\subsection{Batch Reinforcement Learning}
+Gradient descent methods ares imple and appeling, but they ar enot sample efficient. So, the idea of the 
+batch methids is to fit the best fitting value function across all of the trainig data of the agent i.e. the
+history of the agent. One of the defination of the best fit is the least sqaures fit.
+
+\subsubsection{Least Squares Prediction}
+Given a value function approximaion, \(v(s,\mathbf{w}) \approx v_{\pi}(s)\), and the experience \(\mathcal{D}\)
+consiting of state vaue pairs :
+\[
+    \mathcal{D} =  \langle S_1,v_1^{\pi} \rangle, \langle S_2,v_2^{\pi} \rangle, \dots, \langle S_T,v_T^{\pi} \rangle 
+\] 
+find the parameters \(\mathbf{w}\) that minimises the mean squared error between the approximate value function
+\(v(s,\mathbf{w})\) and the true value function \(v_{\pi}(s)\) or the target value \(v_t^{\pi}\):
+\[
+    \begin{aligned}
+        LS(\mathbf{w}) &= \sum_{t=1}^{T} \left[ 
+            v_t^{\pi} - v(s_t,\mathbf{w})
+         \right]^2 \\
+         &= \mathbb{E}_{\mathcal{D}} \left[ 
+            \left( 
+                v^{\pi} - v(s,\mathbf{w})
+             \right)^2
+          \right]
+    \end{aligned}
+\]
+
+\subsubsection{Stochastic Gradient Descent with Experience Replay}
+Given, experince consisteing of state value pairs:
+\[
+    \mathcal{D} =  \langle S_1,v_1^{\pi} \rangle, \langle S_2,v_2^{\pi} \rangle, \dots, \langle S_T,v_T^{\pi} \rangle
+\]
+Sample state value pair \(\langle S_t,v_t^{\pi} \rangle\) from the experience \(\mathcal{D}\). Then, update the
+parameter vector \(\mathbf{w}\) with the follwoing update rule:
+\[
+    \Delta \mathbf{w} = \alpha \left[ 
+        v^{\pi} - v(s,\mathbf{w})
+     \right] \nabla v(s,\mathbf{w})  
+\]
+This update rule converges to least squares solution:
+\[
+    \mathbf{w}^{\pi} = \argmin_{\mathbf{w}} LS(\mathbf{w})  
+\]
+
+\subsubsection{Experience Replay in Deep Q-Networks (DQN)}
+DQN uses experience replay and fixed Q-targets to stabilise the learning.
+\begin{itemize}
+    \item Taklee action \(a_t\) according to \(\epsilon\)-greedy policy
+    \item Store the transition \(\langle S_t,A_t,R_{t+1},S_{t+1} \rangle\) in the replay
+    buffer \(\mathcal{D}\) 
+    \item Sample random minibatch of transitions \(\langle S,A,R,S^{\prime} \rangle\) from \(\mathcal{D}\)
+    \item Compute Q-learning targets with fixed Q-targets wrt to old parametrs \(\mathbf{w}^{-}\):
+    \item Optimse the MSE between Q-network and Q-learning targets:
+    \[
+        \mathcal{L}_i(\mathbf{w}_i) = \mathbb{E}_{S,A,R,S^{\prime} \sim \mathcal{D}_i} \left[ 
+            \left( 
+                y_i - Q(S,A;\mathbf{w}_i)
+             \right)^2
+         \right]
+    \]
+    where \(y_i = R + \gamma \max\limits_{a^{\prime}} Q(S^{\prime},a^{\prime};\mathbf{w}_i^{-})\)
+
+\end{itemize}
+
+\subsubsection{Linear Least Squares Prediction}
+Experience Replay finds the least sqaures solutions, but it may take many many iterations, and thus it is not
+sample efficient. Using linear value function approximation, \(\hat{v}(s,\mathbf{w}) = \mathbf{x}(s)^{\top}
+\mathbf{w}\), we can find a closed form least squares solution.
+
+At minimum of LS(\(\mathbf{w}\)), the expected update must be zero:
+\[
+    \begin{aligned}
+        \mathbb{E}_{\mathcal{D}} \left[ \Delta \mathbf{w} 
+         \right]  &= 0 \\
+         \alpha \sum_{t=1}^T \mathbf{x}(s_t)(v_t^{\pi} - \mathbf{x}(s_t)^{\top} \mathbf{w}) &= 0 \\
+         \sum_{t=1}^T \mathbf{x}(s_t) v_t^{\pi} &= \sum_{t=1}^T \mathbf{x}(s_t) \mathbf{x}
+         (s_t)^{\top} \mathbf{w} \\
+         \implies  \mathbf{w} &= \left( \sum_{t=1}^T \mathbf{x}(s_t) \mathbf{x}(s_t)^{\top} \right)^{-1}
+          \sum_{t=1}^T \mathbf{x}(s_t) v_t^{\pi}
+    \end{aligned}
+\]
+
+SInce we dont know the true value function \(v_{\pi}(s)\), we can use the noisy or biased estimate of
+\(v_t^{\pi}\) as the target:
+\begin{itemize}
+    \item LSMC : Least Squares Monte Carlo use the return \(G_t\) as the target:
+    \[
+        v_t^{\pi} \approx  G_t
+    \]
+    \item LSTD(0) : Least Squares Temporal Difference uses the TD target:
+    \[
+        v_t^{\pi} \approx R_{t+1} + \gamma \hat{v}(S_{t+1},\mathbf{w})  
+    \]
+    \item LS(\(\lambda\)) : Least Squares TD(\(\lambda\)) uses the \(\lambda\)-return \(G_t^{\lambda}\) as the
+    target:
+    \[
+        v_t^{\pi} \approx G_t^{\lambda}
+    \]
+\end{itemize}
