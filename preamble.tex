@@ -438,7 +438,7 @@
 \definecolor{myred}{RGB}{199, 68, 64}
 \definecolor{mypurple}{RGB}{197, 92, 212}
 
-\definecolor{definition}{HTML}{228b22}
+\definecolor{definition}{HTML}{7B0000}
 \definecolor{theorem}{HTML}{00007B}
 \definecolor{example}{HTML}{2A7F7F}
 \definecolor{definition}{HTML}{228b22}
@@ -446,7 +446,7 @@
 \definecolor{lemma}{HTML}{983b0f}
 \definecolor{exercise}{HTML}{88D6D1}
 
-\colorlet{definition}{mygreen!85!black}
+% \colorlet{definition}{mygreen!85!black}
 \colorlet{claim}{mygreen!85!black}
 \colorlet{corollary}{mypurple!85!black}
 \colorlet{proof}{theorem}
@@ -556,6 +556,7 @@
 \declaretheorem[numberwithin=section, style=thmexercisebox,    name=Exercise]{exercise}
 \declaretheorem[numbered=no,          style=thmproofbox,       name=Proof]{replacementproof}
 \declaretheorem[numbered=no,          style=thmexplanationbox, name=Proof]{expl}
+\declaretheorem[numberwithin=section, style=thmdefinitionbox,  name=Definition]{definition}
 
 \makeatletter
 \@ifclasswith\class{nocolor}{
@@ -563,49 +564,11 @@
 
   \newtheorem*{note}{Note}
 
-  \declaretheorem[numberwithin=section, style=thmdefinitionbox, name=Definition]{definition}
   \declaretheorem[numberwithin=section, style=thmquestionbox,   name=Question]{question}
   \declaretheorem[numberwithin=section, style=thmsolutionbox,   name=Solution]{solution}
 }{
   % Environments with color.
 
-  \newtcbtheorem[number within=section]{Definition}{Definition}{
-    enhanced,
-    before skip=2mm,
-    after skip=2mm,
-    colback=red!5,
-    colframe=red!80!black,
-    colbacktitle=red!75!black,
-    boxrule=0.5mm,
-    attach boxed title to top left={
-      xshift=1cm,
-      yshift*=1mm-\tcboxedtitleheight
-    },
-    varwidth boxed title*=-3cm,
-    boxed title style={
-      interior engine=empty,
-      frame code={
-        \path[fill=tcbcolback]
-        ([yshift=-1mm,xshift=-1mm]frame.north west)
-        arc[start angle=0,end angle=180,radius=1mm]
-        ([yshift=-1mm,xshift=1mm]frame.north east)
-        arc[start angle=180,end angle=0,radius=1mm];
-        \path[left color=tcbcolback!60!black,right color=tcbcolback!60!black,
-        middle color=tcbcolback!80!black]
-        ([xshift=-2mm]frame.north west) -- ([xshift=2mm]frame.north east)
-        [rounded corners=1mm]-- ([xshift=1mm,yshift=-1mm]frame.north east)
-        -- (frame.south east) -- (frame.south west)
-        -- ([xshift=-1mm,yshift=-1mm]frame.north west)
-        [sharp corners]-- cycle;
-      },
-    },
-    fonttitle=\bfseries,
-    title={#2},
-    #1
-  }{def}
-
-  \NewDocumentEnvironment{definition}{O{}O{}}
-    {\begin{Definition}{#1}{#2}}{\end{Definition}}
 
   \newtcolorbox{note}[1][]{%
     enhanced jigsaw,
