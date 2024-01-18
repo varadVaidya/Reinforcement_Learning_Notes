@@ -186,7 +186,47 @@ arbitrarily.
             \mathbb{P}(A \cap B \cap C) &= \mathbb{P}(A) \mathbb{P}(B | A) \mathbb{P}(C | A \cap B) \\
         \end{aligned}
     \]
-    Thus, we have: 
+    We get,
+    \[
+        \begin{aligned}
+            \mathbb{P}(X_0 = i_0, \dots , X_n = i_n)  & = \mathbb{P} \left( 
+                \{X_0 = i_0\} \cap \{X_1 = i_1\} \cap \dots \cap \{X_n = i_n\}
+             \right)\\ 
+             & = \mathbb{P}(X_0 = i_0) \mathbb{P}(X_1 = i_1 | X_0 = i_0) \dots \mathbb{P}(X_n = i_n | X_{n-1} = i_{n-1}) \\
+             & = \mathbb{P} (X_0 = i_0) \mathbb{P}(X_1 = i_1 | X_0 = i_0) \dots \mathbb{P}(X_n = i_n | X_{n-1} = i_{n-1}) \\
+             &\dots  \text{Using the memoeryless property of Markov chains} \\
+                & = \nu _{i_0} \mathcal{P} _{i_0 i_1} \dots \mathcal{P} _{i_{n-1} i_n} \\
+        \end{aligned}
+    \]
+
+    This proves the forward claim. To show the reverse claim:
+
+    Put \(n=0\), in the claim, to trivially get the initial distribution back, showing one part of the definition.
+    For the other part:
+    \[
+    \begin{aligned}    
+        \mathbb{P}(X_{n} = i_{n} | X_{n-1} = i_{n-1}, \dots, X_{0} = i_{0}) &=
+         \frac{\mathbb{P}(X_{n} = i_{n}, \dots, X_{0} = i_{0})}
+         {\mathbb{P}(X_{n-1} = i_{n-1}, \dots, X_{0} = i_{0})} \\
+         &= \frac{\nu _{i_0} \mathcal{P} _{i_0 i_1} \dots \mathcal{P} _{i_{n-1} i_n}}
+         {\nu _{i_0} \mathcal{P} _{i_0 i_1} \dots \mathcal{P} _{i_{n-1} i_n}} \\
+            &= \mathcal{P} _{i_{n-1} i_n} \\
+    \end{aligned}
+    \]
+
+    Now we need to show:
+    \[
+        \mathbb{P}(X_{n} = i_{n} | X_{n-1} = i_{n-1})
+    \]
+    \[
+        \begin{aligned}
+            & = \frac{\mathbb{P}(X_{n-1} = i_{n-1}, X_{n} = i_{n})}{\mathbb{P}(X_{n-1} = i_{n-1})} \\
+            & = \frac{\sum_{i_0 \in \mathcal{S} } \mathbb{P}(X_0 = i_0 \dots  X_{n-1} = i_{n-1}, X_{n} = i_{n})}
+            {\sum_{i_0 \in \mathcal{S} } \mathbb{P}(X_{n-1} = i_{n-1}, X_{0} = i_{0})} \\
+            & = \mathcal{P} _{i_{n-1} i_n} \\
+        \end{aligned}
+    \]
+
 \end{proof}
 
 \subsection{Markov Reward Processes}
