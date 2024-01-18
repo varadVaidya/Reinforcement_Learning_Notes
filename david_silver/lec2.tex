@@ -1,5 +1,4 @@
 \section{{Lecture 2 | Markov Decision Processes}}
-\subsection{Markov Processes}
 Markov decision process formally describe an enviroment for reinforcement
 learning. The nice case for this setting is that the environemtn is fully observable. Thus,
 the current state completely characterizes the process. This is called the Markov property.
@@ -7,39 +6,188 @@ the current state completely characterizes the process. This is called the Marko
 Thus, all RL problems can bve formalised in terms of MDPs. Optimal Control problem can be 
 formalised as continuous MDPs. Partially observable problems can be always converted 
 to MDPs.
-\subsubsection*{State Transition Matrix}
-For a markov state \(s\) and succesor state \(s^{\prime} \) the state transition probability
-is defined as:
-\begin{equation}
-    \mathcal{P} _{ss^{\prime}} = \mathcal{P} [S_{t+1} = s^{\prime} | S_{t} = s]
-\end{equation}
-Thus each row of the matrix is a probability distribution over the next state assuming
-that we are in the state of the row. 
-\[
-    \mathcal{P} = 
-    \begin{bmatrix}
-        \mathcal{P} _{11} & \mathcal{P} _{12} & \dots & \mathcal{P} _{1n} \\
-        \mathcal{P} _{21} & \mathcal{P} _{22} & \dots & \mathcal{P} _{2n} \\
-        \vdots & \vdots & \ddots & \vdots \\
-        \mathcal{P} _{n1} & \mathcal{P} _{n2} & \dots & \mathcal{P} _{nn} \\
-    \end{bmatrix}  
-\]
-Each row sums over to 1.
+\subsection{Markov Processes or Markov Chains}
+A Markov chain is simply a Markov Decision Process without decision. It is one the 
+most simplest stocastic process, and has no ``memory'' of the past. So, just the 
+present stat determines its future dynamics. In this context, we will be considering
+Discrete Time Markov Chains (DTMCs).
 
-THus, a markov process is a memoeryless random process, i.e. a sequence of random states
-\(S_{1}, S_{2}, \dots \) with the Markov property. 
+DTMC involves two concepts:
+\begin{itemize}
+    \item Discrete Time Stochastic Process (DTSP)
+    \item Row Stochastic Matrix.
+\end{itemize}
 
-\begin{definition}[Markov Process]
-    A Markov process is a tuple \((\mathcal{S}, \mathcal{P} )\) consisting of a finite set
-    of states \(\mathcal{S} \) and a state transition probability matrix \(\mathcal{P} \).
-    where,
+The two are defined as follows:
+
+\begin{definition}[Discrete Time Stochastic Process (DTSP)]
+    A DTSP is a sequence \({(X_n)}_{n \geq 0}\) of random variables defined on the same proboability space
+    \((\Omega, \mathcal{F} , \mathbb{P} )\), taking values in the same 
+    set \(\mathcal{S} \), i.e.
     \[
-        \mathcal{P} _{ss^{\prime}} = \mathbb{P}  [S_{t+1} = s^{\prime} | S_{t} = s]  
+        X_n : \Omega \rightarrow \mathcal{S} \quad \forall n \geq 0
     \]
-    for all \(s, s^{\prime} \in \mathcal{S} \).
 \end{definition}
-Random Process is a random sequence that is drawn from a probability distribution over 
-the sequences of state given by the markov chain.
+where \(\mathcal{S} \) is called a state space, and in finite or countably infinite.
+We call the a variable as a ``state'' when the state is an element of the state space \(\mathcal{S} \).
+The cardinality of the state space is denoted by \(|\mathcal{S} |\).
+
+\begin{definition}[Row Stochastic Matrix]
+    A matrix \(\mathcal{P} \in \mathbb{R}^{|S| \times |S|}\) is called a row stochastic matrix if
+    it satisfies the following conditions:
+    \[
+        \mathcal{P} _{ij} \in [0, 1] \quad \forall i, j \in \mathcal{S}  
+    \]
+    \[
+        \sum\limits_{j = 1 }^{ |\mathcal{S}|} \mathcal{P} _{ij} = 1 \quad \forall i \in \mathcal{S}  
+    \]
+\end{definition}
+Thus, with these two definitions we can define a Markov Chain (or DTMC) as follows:
+\begin{definition}[Markov Chain]
+    Let \(\mathcal{S} \) be a finite state space, and \(\nu\) be a distribution over \(\mathcal{S} \).
+    \[
+        \nu = (\nu _{1}, \nu _{2}, \dots, \nu _{|\mathcal{S}|}) \quad
+        \text{s.t} \quad \nu _{i} \in [0, 1] \; \forall i \in \mathcal{S},
+        \quad \sum\limits_{i \in \mathcal{S} } \nu _{i} = 1
+    \]  
+    Further, let \(\mathcal{P} \) be a row stocastic matrix over \(\mathcal{S} \).
+    
+    Then a DTSP \({(X_n)}_{n \geq 0}\) is called a Markov Chain with initial distribution \(\nu \)
+    and transition matrix \(\mathcal{P} \) if it satisfies the following conditions:
+    \begin{itemize}
+        \item Initial state is distributed according to \(\nu \), i.e.
+        \[
+            \mathbb{P}(X_0 = i) = \nu _{i} \quad \forall i \in \mathcal{S}    
+        \]
+        \item Present is independent of the past given the present.
+        \[
+            \begin{aligned}
+                \mathbb{P} \left( 
+                    X_{n+1} = i_{n+1} | X_{n} = i_{n}, X_{n-1} = i_{n-1}, \dots, X_{0} = i_{0}
+                 \right) &= \mathbb{P} \left( 
+                     X_{n+1} = i_{n+1} | X_{n} = i_{n}
+                  \right) \\
+                    & = \mathcal{P}_{i_{n} i_{n+1}} \quad \forall n \geq 0
+            \end{aligned}
+        \]
+    \end{itemize}
+\end{definition}
+
+\begin{example}[Markov Chains]
+    Let a Markov chain be defined as follows:
+    \[
+        \mathcal{S}  = \{1,2\} \quad \nu = (p, 1-p) \quad \mathcal{P}  = \begin{bmatrix}
+            1-\alpha  &  \alpha  \\
+            \beta  &  1-\beta  \\
+        \end{bmatrix}
+    \]
+    \begin{center}
+        \begin{tikzpicture}[->,>=stealth',shorten >=2pt,line width=0.5pt,node distance=2cm]
+            \node[circle,draw] (zero) {1};
+            \node[circle,draw] (one) [right of=zero] {2};
+            \path (zero) edge [loop above] node {\(1-\alpha \)} (zero);
+            \path (zero) edge [bend left] node[above] {\(\alpha \)} (one);
+            \path (one) edge [loop below] node {\(1-\beta \)} (one);
+            \path (one) edge [bend left] node[below] {\(\beta \)} (zero);
+        \end{tikzpicture}
+    \end{center}
+Thus, we can have say:
+\[
+    \mathbb{P} (X_3 = 1 | X_0 = 1, X_1 = 1 , X_2 - 2) = \beta 
+\]
+
+Another example that we can have is:
+\[
+    \mathcal{S} = \{1,2,3\} \quad \nu = (\nu_{1}, \nu_{2}, \nu_{3}) \quad \mathcal{P} = \begin{bmatrix}
+        0 & 1 & 0 \\
+        0 & \frac{1}{2} & \frac{1}{2}  \\
+        \frac{1}{2} & 0 & \frac{1}{2} \\
+    \end{bmatrix}
+\]
+    \begin{center}
+        \begin{tikzpicture}[->,>=stealth',shorten >=2pt,line width=0.5pt,node distance=3cm]
+            \node[circle,draw] (one) {1};
+            \node[circle,draw] (two) [below right of=zero] {2};
+            \node[circle,draw] (three) [below left of=zero] {3};
+            \path (one) edge [bend left] node[below left] {\(1 \)} (two);
+            \path (two) edge [bend left] node[above] {\(\frac{1}{2} \)} (three);
+            \path (three) edge [bend left] node[below right] {\(\frac{1}{2} \)} (one);
+        \end{tikzpicture}
+    \end{center}
+    given, \(\nu = (1,0,0)\), the outcomes of the Markov chain if we sample it are:
+    \[
+        \begin{aligned}
+            X_n &= 1, 2, 3, 3, 1, 2, \dots \\
+            &= 1, 2, 3, 1, 2, \dots \\ 
+        \end{aligned}
+    \] 
+\end{example}
+Note that, to define the DTMC, we need the initial distribution, but the results wont change on the
+choice of the distribution \(\nu\), assuming that the Markov chain is ergodic. Hence, while
+defining the markov chain, the initial distribution is not mentioned, and can be assumed
+arbitrarily.
+
+
+% \subsubsection*{State Transition Matrix}
+% For a markov state \(s\) and succesor state \(s^{\prime} \) the state transition probability
+% is defined as:
+% \begin{equation}
+%     \mathcal{P} _{ss^{\prime}} = \mathcal{P} [S_{t+1} = s^{\prime} | S_{t} = s]
+% \end{equation}
+% Thus each row of the matrix is a probability distribution over the next state assuming
+% that we are in the state of the row. 
+% \[
+%     \mathcal{P} = 
+%     \begin{bmatrix}
+%         \mathcal{P} _{11} & \mathcal{P} _{12} & \dots & \mathcal{P} _{1n} \\
+%         \mathcal{P} _{21} & \mathcal{P} _{22} & \dots & \mathcal{P} _{2n} \\
+%         \vdots & \vdots & \ddots & \vdots \\
+%         \mathcal{P} _{n1} & \mathcal{P} _{n2} & \dots & \mathcal{P} _{nn} \\
+%     \end{bmatrix}  
+% \]
+% Each row sums over to 1.
+
+% THus, a markov process is a memoeryless random process, i.e. a sequence of random states
+% \(S_{1}, S_{2}, \dots \) with the Markov property. 
+
+% \begin{definition}[Markov Process]
+%     A Markov process is a tuple \((\mathcal{S}, \mathcal{P} )\) consisting of a finite set
+%     of states \(\mathcal{S} \) and a state transition probability matrix \(\mathcal{P} \).
+%     where,
+%     \[
+%         \mathcal{P} _{ss^{\prime}} = \mathbb{P}  [S_{t+1} = s^{\prime} | S_{t} = s]  
+%     \]
+%     for all \(s, s^{\prime} \in \mathcal{S} \).
+% \end{definition}
+% Random Process is a random sequence that is drawn from a probability distribution over 
+% the sequences of state given by the markov chain.
+
+\begin{theorem}[Necessary and Sufficient Conditions for DTSP to be Markov Chains]
+    A DTSP \({(X_n)}_{n \geq 0}\) on \(\mathcal{S}\)  is a Markov chain \(\langle \mathcal{S} , \mathcal{P} 
+    ,\nu \rangle\) if and only if:
+    \[
+        \mathbb{P} \left( 
+            X_{n} = i_{n} , X_{n} = i_{n}, \dots, X_{0} = i_{0}
+            \right) = \nu _{i_{0}} \mathcal{P} _{i_{0} i_{1}}
+             \mathcal{P} _{i_{1} i_{2}} \dots \mathcal{P} _{i_{n-1} i_{n}} \quad \forall n \geq 0
+    \] 
+\end{theorem}
+\begin{proof}
+    To simplify the proof, assume that \(\mathcal{P}_{ij} > 0 \quad \forall i, j \in \mathcal{S} \).
+    The theorem remains true in the general case, but requires more book-keeping.
+
+    Suppose, \({(X_n)}_{n \geq 0}\) is a Markov chain \(\langle \mathcal{S} , \mathcal{P}
+    , \nu \rangle\). 
+    
+    Using the fact,
+    \[
+        \begin{aligned}
+            \mathbb{P}(A \cap B) &= \mathbb{P}(A) \mathbb{P}(B | A) \\
+            \mathbb{P}(A \cap B \cap C) &= \mathbb{P}(A) \mathbb{P}(B | A) \mathbb{P}(C | A \cap B) \\
+        \end{aligned}
+    \]
+    Thus, we have: 
+\end{proof}
 
 \subsection{Markov Reward Processes}
 A Markov Reward Process is a Markov chain with values.
