@@ -1,0 +1,301 @@
+\section{Markov Chains}
+\subsection{Markov Processes or Markov Chains}
+A Markov chain is simply a Markov Decision Process without decision. It is one the 
+most simplest stocastic process, and has no ``memory'' of the past. So, just the 
+present stat determines its future dynamics. In this context, we will be considering
+Discrete Time Markov Chains (DTMCs).
+
+DTMC involves two concepts:
+\begin{itemize}
+    \item Discrete Time Stochastic Process (DTSP)
+    \item Row Stochastic Matrix.
+\end{itemize}
+
+The two are defined as follows:
+
+\begin{definition}[Discrete Time Stochastic Process (DTSP)]
+    A DTSP is a sequence \({(X_n)}_{n \geq 0}\) of random variables defined on the same proboability space
+    \((\Omega, \mathcal{F} , \mathbb{P} )\), taking values in the same 
+    set \(\mathcal{S} \), i.e.
+    \[
+        X_n : \Omega \rightarrow \mathcal{S} \quad \forall n \geq 0
+    \]
+\end{definition}
+where \(\mathcal{S} \) is called a state space, and in finite or countably infinite.
+We call the a variable as a ``state'' when the state is an element of the state space \(\mathcal{S} \).
+The cardinality of the state space is denoted by \(|\mathcal{S} |\).
+
+\begin{definition}[Row Stochastic Matrix]
+    A matrix \(\mathcal{P} \in \mathbb{R}^{|S| \times |S|}\) is called a row stochastic matrix if
+    it satisfies the following conditions:
+    \[
+        \mathcal{P} _{ij} \in [0, 1] \quad \forall i, j \in \mathcal{S}  
+    \]
+    \[
+        \sum\limits_{j = 1 }^{ |\mathcal{S}|} \mathcal{P} _{ij} = 1 \quad \forall i \in \mathcal{S}  
+    \]
+\end{definition}
+Thus, with these two definitions we can define a Markov Chain (or DTMC) as follows:
+\begin{definition}[Markov Chain]
+    Let \(\mathcal{S} \) be a finite state space, and \(\nu\) be a distribution over \(\mathcal{S} \).
+    \[
+        \nu = (\nu _{1}, \nu _{2}, \dots, \nu _{|\mathcal{S}|}) \quad
+        \text{s.t} \quad \nu _{i} \in [0, 1] \; \forall i \in \mathcal{S},
+        \quad \sum\limits_{i \in \mathcal{S} } \nu _{i} = 1
+    \]  
+    Further, let \(\mathcal{P} \) be a row stocastic matrix over \(\mathcal{S} \).
+    
+    Then a DTSP \({(X_n)}_{n \geq 0}\) is called a Markov Chain with initial distribution \(\nu \)
+    and transition matrix \(\mathcal{P} \) if it satisfies the following conditions:
+    \begin{itemize}
+        \item Initial state is distributed according to \(\nu \), i.e.
+        \[
+            \mathbb{P}(X_0 = i) = \nu _{i} \quad \forall i \in \mathcal{S}    
+        \]
+        \item Present is independent of the past given the present.
+        \[
+            \begin{aligned}
+                \mathbb{P} \left( 
+                    X_{n+1} = i_{n+1} | X_{n} = i_{n}, X_{n-1} = i_{n-1}, \dots, X_{0} = i_{0}
+                 \right) &= \mathbb{P} \left( 
+                     X_{n+1} = i_{n+1} | X_{n} = i_{n}
+                  \right) \\
+                    & = \mathcal{P}_{i_{n} i_{n+1}} \quad \forall n \geq 0
+            \end{aligned}
+        \]
+    \end{itemize}
+\end{definition}
+
+\begin{example}[Markov Chains]
+    Let a Markov chain be defined as follows:
+    \[
+        \mathcal{S}  = \{1,2\} \quad \nu = (p, 1-p) \quad \mathcal{P}  = \begin{bmatrix}
+            1-\alpha  &  \alpha  \\
+            \beta  &  1-\beta  \\
+        \end{bmatrix}
+    \]
+    \begin{center}
+        \begin{tikzpicture}[->,>=stealth',shorten >=2pt,line width=0.5pt,node distance=2cm]
+            \node[circle,draw] (zero) {1};
+            \node[circle,draw] (one) [right of=zero] {2};
+            \path (zero) edge [loop above] node {\(1-\alpha \)} (zero);
+            \path (zero) edge [bend left] node[above] {\(\alpha \)} (one);
+            \path (one) edge [loop below] node {\(1-\beta \)} (one);
+            \path (one) edge [bend left] node[below] {\(\beta \)} (zero);
+        \end{tikzpicture}
+    \end{center}
+Thus, we can have say:
+\[
+    \mathbb{P} (X_3 = 1 | X_0 = 1, X_1 = 1 , X_2 - 2) = \beta 
+\]
+
+Another example that we can have is:
+\[
+    \mathcal{S} = \{1,2,3\} \quad \nu = (\nu_{1}, \nu_{2}, \nu_{3}) \quad \mathcal{P} = \begin{bmatrix}
+        0 & 1 & 0 \\
+        0 & \frac{1}{2} & \frac{1}{2}  \\
+        \frac{1}{2} & 0 & \frac{1}{2} \\
+    \end{bmatrix}
+\]
+    \begin{center}
+        \begin{tikzpicture}[->,>=stealth',shorten >=2pt,line width=0.5pt,node distance=3cm]
+            \node[circle,draw] (one) {1};
+            \node[circle,draw] (two) [below right of=zero] {2};
+            \node[circle,draw] (three) [below left of=zero] {3};
+            \path (one) edge [bend left] node[below left] {\(1 \)} (two);
+            \path (two) edge [bend left] node[above] {\(\frac{1}{2} \)} (three);
+            \path (three) edge [bend left] node[below right] {\(\frac{1}{2} \)} (one);
+        \end{tikzpicture}
+    \end{center}
+    given, \(\nu = (1,0,0)\), the outcomes of the Markov chain if we sample it are:
+    \[
+        \begin{aligned}
+            X_n &= 1, 2, 3, 3, 1, 2, \dots \\
+            &= 1, 2, 3, 1, 2, \dots \\ 
+        \end{aligned}
+    \] 
+\end{example}
+\vspace{1em}
+Note that, to define the DTMC, we need the initial distribution, but the results wont change on the
+choice of the distribution \(\nu\), assuming that the Markov chain is ergodic. Hence, while
+defining the markov chain, the initial distribution is not mentioned, and can be assumed
+arbitrarily.
+
+\begin{theorem}[Necessary and Sufficient Conditions for DTSP to be Markov Chains]
+    A DTSP \({(X_n)}_{n \geq 0}\) on \(\mathcal{S}\)  is a Markov chain \(\langle \mathcal{S} , \mathcal{P} 
+    ,\nu \rangle\) if and only if:
+    \[
+        \mathbb{P} \left( 
+            X_{n} = i_{n} , X_{n} = i_{n}, \dots, X_{0} = i_{0}
+            \right) = \nu _{i_{0}} \mathcal{P} _{i_{0} i_{1}}
+             \mathcal{P} _{i_{1} i_{2}} \dots \mathcal{P} _{i_{n-1} i_{n}} \quad \forall n \geq 0
+    \] 
+\end{theorem}
+\begin{proof}
+    To simplify the proof, assume that \(\mathcal{P}_{ij} > 0 \quad \forall i, j \in \mathcal{S} \).
+    The theorem remains true in the general case, but requires more book-keeping.
+
+    Suppose, \({(X_n)}_{n \geq 0}\) is a Markov chain \(\langle \mathcal{S} , \mathcal{P}
+    , \nu \rangle\). 
+    
+    Using the fact,
+    \[
+        \begin{aligned}
+            \mathbb{P}(A \cap B) &= \mathbb{P}(A) \mathbb{P}(B | A) \\
+            \mathbb{P}(A \cap B \cap C) &= \mathbb{P}(A) \mathbb{P}(B | A) \mathbb{P}(C | A \cap B) \\
+        \end{aligned}
+    \]
+    We get,
+    \[
+        \begin{aligned}
+            \mathbb{P}(X_0 = i_0, \dots , X_n = i_n)  & = \mathbb{P} \left( 
+                \{X_0 = i_0\} \cap \{X_1 = i_1\} \cap \dots \cap \{X_n = i_n\}
+             \right)\\ 
+             & = \mathbb{P}(X_0 = i_0) \mathbb{P}(X_1 = i_1 | X_0 = i_0) \dots \mathbb{P}(X_n = i_n | X_{n-1} = i_{n-1}) \\
+             & = \mathbb{P} (X_0 = i_0) \mathbb{P}(X_1 = i_1 | X_0 = i_0) \dots \mathbb{P}(X_n = i_n | X_{n-1} = i_{n-1}) \\
+             &\dots  \text{Using the memoeryless property of Markov chains} \\
+                & = \nu _{i_0} \mathcal{P} _{i_0 i_1} \dots \mathcal{P} _{i_{n-1} i_n} \\
+        \end{aligned}
+    \]
+
+    This proves the forward claim. To show the reverse claim:
+
+    Put \(n=0\), in the claim, to trivially get the initial distribution back, showing one part of the definition.
+    For the other part:
+    \[
+    \begin{aligned}    
+        \mathbb{P}(X_{n} = i_{n} | X_{n-1} = i_{n-1}, \dots, X_{0} = i_{0}) &=
+         \frac{\mathbb{P}(X_{n} = i_{n}, \dots, X_{0} = i_{0})}
+         {\mathbb{P}(X_{n-1} = i_{n-1}, \dots, X_{0} = i_{0})} \\
+         &= \frac{\nu _{i_0} \mathcal{P} _{i_0 i_1} \dots \mathcal{P} _{i_{n-1} i_n}}
+         {\nu _{i_0} \mathcal{P} _{i_0 i_1} \dots \mathcal{P} _{i_{n-1} i_n}} \\
+            &= \mathcal{P} _{i_{n-2} i_{n-1} } \\
+    \end{aligned}
+    \]
+
+    Now we need to show:
+    \[
+        \mathbb{P}(X_{n} = i_{n} | X_{n-1} = i_{n-1})
+    \]
+    \[
+        \begin{aligned}
+            & = \frac{\mathbb{P}(X_{n-1} = i_{n-1}, X_{n} = i_{n})}{\mathbb{P}(X_{n-1} = i_{n-1})} \\
+            & = \frac{\sum_{i_0 \in \mathcal{S} } \mathbb{P}(X_0 = i_0 \dots  X_{n-1} = i_{n-1}, X_{n} = i_{n})}
+            {\sum_{i_0 \in \mathcal{S} } \mathbb{P}(X_{n-1} = i_{n-1}, X_{0} = i_{0})} \\
+            & = \mathcal{P} _{i_{n-1} i_n} \\
+        \end{aligned}
+    \]
+\end{proof}\vspace{1em}
+In the above proof we have used the following series of fact:
+\[
+    \begin{aligned}
+        \mathbb{P} (X_2 = j) & = \mathbb{P}(\Omega \cap \{X_2 = j\})\\
+        &= \mathbb{P} \left[ 
+            \bigcup_{i=1}^{ |S| } \{X_i = i\} \cap \{X_2 = j\}
+         \right] \\
+    \end{aligned}
+\]
+Using the fact:
+\[
+    (A \cup B) \cap C = (A \cap C ) \cup (B \cap C)
+\]
+we get:
+\[
+    \begin{aligned}
+        \mathbb{P} (X_2 = j) & = \sum\limits_{i = 1}^{ |S| } 
+        \mathbb{P} \left(
+             X_i = i, X_2 = j
+         \right)
+    \end{aligned}
+\]
+
+\begin{theorem}[Markov Property]
+    Let \({(X_n)}_{n \geq  0} \) be the markov chain detnoted by \(\langle \mathcal{S} ,\mathcal{P} ,\mu  \rangle \),
+then condintional on \(\{X_m = i\}\), \(\{X_{m+n} \}\) is the markov chain \(\langle \mathcal{S} ,\mathcal{P} , \delta _i \rangle \) 
+and is independent of \(X_1, X_2, \dots , X_m\), where \(\delta _i\) is the distribution that is 1 at \(i\)
+ and 0 everywhere else, i.e
+ \[
+        \delta _i (j) \equiv \delta_{ij} =  \begin{cases}
+            1 & \text{if } j = i \\
+            0 & \text{otherwise} \\
+        \end{cases} 
+ \]
+\end{theorem}
+\begin{proof}
+    It suffices to show the following, for any \(n \geq 0\) and on an event \(A\), related to \(X_0,\dots , X_m\):
+    \[
+        \begin{aligned}
+            \mathbb{P} \left[ 
+                (X_m = i_m, X_{m+1} = i_{m+1}, \dots , X_{m+n} = i_{m+n}) \cap A \mid X_m = i_m 
+                \right] \\ 
+                = \mathbb{P} ( A \mid X_m=i_m) \delta_{ij} \mathcal{P} _{i_m i_{m+1}} \dots 
+                \mathcal{P} _{i_{m+n-1} i_{m+n}} 
+            \end{aligned}
+    \]
+    The above equation is just conditional independence:
+    \[
+        \mathbb{P} (E_1 \cap  E_2 \mid X_m = i) = \mathbb{P} (E_1 \mid X_m = i) \mathbb{P} (E_2 \mid X_m = i)
+    \]
+    where \(E_2 = (X_m = i_m, X_{m+1} = i_{m+1}, \dots , X_{m+n} = i_{m+n})\) and \(E_1 = A\). The proof of the above statement goes as follows:
+
+    Let \(A\) be an elementary event, i.e. \(A = \{X_0 = j_0, X_1 = j_1, \dots , X_m = j_m\}\). Consider the LHS of the above equation:
+    Then, we have two cases:
+    \begin{itemize}
+        \item \textbf{Case 1}: \(j_m \neq i_m\). Then, the LHS is trivially 0, since \(A\) and \(E_2\) are disjoint.
+        \item \textbf{Case 2}: \(j_m = i_m\). Then, we have further cases. When, \( i \neq i_m = j_m\), then 
+        the LHS and RHS are again 0. But when \(i = i_m = j_m\), then the LHS is: 
+        \begin{multline*}
+        \begin{aligned}
+                \mathbb{P} (
+                    X_0 = j_0, X_1 = j_1, \dots X_m = j_m = i ,X_m = i_m = i, X_{m+1} = i_{m+1},\\ \dots , X_{m+n} = i_{m+n} \mid X_m = i_m = i 
+                    )
+                \end{aligned}
+            \end{multline*}
+            \[
+                \begin{aligned}
+                    &= \frac{\nu(j_o) \mathcal{P}_{j_0 j_1} \dots \mathcal{P}_{j_{m-1} j_m} 
+                    \mathcal{P}_{j_m i_{m+1}} \dots \mathcal{P}_{i_{m+n-1} i_{m+n}}}
+                    {\mathbb{P} (X_m = i_m = i)} \\
+                    &= \frac{\mathbb{P} (A) \mathcal{P}_{i_m i_{m+1}} \dots \mathcal{P}_{i_{m+n-1} i_{m+n}}}
+                    {\mathbb{P} (X_m = i_m = i)} \\
+                    &= \mathbb{P} (A \mid X_m = i_m = i) \mathcal{P}_{i_m i_{m+1}} \dots \mathcal{P}_{i_{m+n-1} i_{m+n}} \\
+                \end{aligned}
+            \]
+            \end{itemize}
+    Thus, completing the proof. This can be extended to non elementary event \(A\) by using the fact that
+    any event \(A\) can be written as a union of elementary events, i.e
+    \[
+        A = \bigcup_{i=1}^{ |S| } \{X_0 = i_0, X_1 = i_1, \dots , X_m = i_m\}
+    \]
+\end{proof}
+
+\begin{theorem}[Linear Algebra and Markov Chains]
+    Let \({(X_n)}_{n \geq 0}\) be the marrkov chain \(\langle \mathcal{S} , \mathcal{P} , \nu \rangle\).
+    Then:
+    \begin{enumerate}
+        \item \(\mathbb{P} (X_n = j) = {(\nu \mathcal{P} ^{n})}_{j} \)
+        \item \(\mathbb{P}_i (X_n = j) = \mathbb{P} \left( X_{m+n} = j \mid X_m = i \right) 
+        = \mathcal{P}_{ij}^{(n)}\equiv \text{ij entry of } \mathcal{P} ^{n}\)
+    \end{enumerate}
+\end{theorem}
+\begin{proof}
+    The second statement is obivious from the first statement. The proof of the first statement goes as follows:
+
+    \textbf{Proof by induction}: For \(n=0\), we have:
+    \[
+        \mathbb{P} (X_0 = j) = \nu _j \equiv \nu(j)  
+    \]
+    Now, assume that the statement is true for \(n\), then we have:
+    \[
+        \begin{aligned}
+            \mathbb{P} (X_{n+1} = j) &= \mathbb{P} \left( 
+                \bigcup_{i=1}^{ |S| } \{X_n = i , X_{n+1} = j\}
+             \right) \\
+                &= \sum_{i=1}^{ |S| } \mathbb{P} (X_n = i, X_{n+1} = j) \\
+                &= \sum_{i=1}^{ |S| } \mathbb{P} (X_n = i) \mathbb{P} (X_{n+1} = j \mid X_n = i) \\
+                &= \sum_{i=1}^{ |S| } \mathbb{P} (X_n = i) \mathcal{P}_{ij} \\
+                &= \sum_{i=1}^{ |S| } {(\nu \mathcal{P}^n)}_j \mathcal{P}_{ij} \\
+                &= {(\nu \mathcal{P}^{n+1})}_j \\
+        \end{aligned}
+    \]
+\end{proof}
