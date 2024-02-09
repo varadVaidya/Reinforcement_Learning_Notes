@@ -14,6 +14,7 @@
 \usepackage{multicol}
 % Gives us better math syntax.
 \usepackage{amsmath,amsfonts,amsthm,amssymb}
+\usepackage{mathtools}
 % Lets us strikethrough text.
 \usepackage{cancel}
 % Lets us edit the caption of a figure.
@@ -441,7 +442,7 @@
 
 \definecolor{definition}{HTML}{7B0000}
 \definecolor{theorem}{HTML}{00007B}
-\definecolor{example}{HTML}{2A7F7F}
+\definecolor{example}{HTML}{000000}
 \definecolor{definition}{HTML}{228b22}
 \definecolor{prop}{HTML}{191971}
 \definecolor{lemma}{HTML}{983b0f}
@@ -531,7 +532,8 @@
   \createnewcoloredtheoremstyle{thmdefinitionbox}{definition}{}{}
   \createnewcoloredtheoremstyle{thmtheorembox}{theorem}{}{}
   \createnewcoloredtheoremstyle{thmexamplebox}{example}{}{
-    rightline=true, leftline=true, topline=true, bottomline=true
+    % rightline=true, leftline=true, topline=true, bottomline=true
+    backgroundcolor=white
   }
   \createnewcoloredtheoremstyle{thmclaimbox}{claim}{}{}
   \createnewcoloredtheoremstyle{thmcorollarybox}{corollary}{}{}

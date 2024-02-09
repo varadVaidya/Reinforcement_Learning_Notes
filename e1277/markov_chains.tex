@@ -298,4 +298,386 @@ and is independent of \(X_1, X_2, \dots , X_m\), where \(\delta _i\) is the dist
                 &= {(\nu \mathcal{P}^{n+1})}_j \\
         \end{aligned}
     \]
+    Thus, the proof is complete.
+\end{proof}
+
+\subsection{Communicating Classes}
+\begin{definition}
+    Let \(\langle \mathcal{S} , \mathcal{P} , \nu \rangle\) be a markov chain. Then, we say \(i\) leads to 
+    \(j\) denoted as \(i \to j\) if:
+    \[
+        \mathbb{P}_i ( X_n = j \text{ for some } n \geq 0) > 0
+    \] 
+    which is equivalent to:
+    \[
+        \mathbb{P}( X_{m+n} = j \text{ for some } n \geq 0 \mid X_m = i) > 0
+    \]
+\end{definition}
+\begin{definition}
+    Let \(\langle \mathcal{S} , \mathcal{P} , \nu \rangle\) be a markov chain. Then, we say \(i\) and \(j\) communicate
+    denoted as \(i \leftrightarrow j\) if:
+    \[
+        i \to j \text{ and } j \to i
+    \]
+\end{definition}
+\begin{theorem}
+    The following statements are equivalent:
+    \begin{itemize}
+        \item \(i \leftrightarrow j\)
+        \item \(\mathcal{P}_{i_0 i_1} \mathcal{P}_{i_1 i_2} \dots \mathcal{P}_{i_{n-1} i_n} > 0 \)
+        for some \(n \geq  0\)  and some sequence of states \(i_0, i_1, \dots , i_n\)
+         such that \(i_0 = i\) and \(i_n = j\).
+         \item \(\mathcal{P}_{ij}^{(n)} > 0 \text{ for some } n \geq 0\)
+    \end{itemize}
+\end{theorem}
+\begin{proof}
+    i did not understood this :( Revisit this later.
+\end{proof}
+\begin{definition}[Communicating Class]
+    Each equivalence class of the relation \(\leftrightarrow\) is called a communicating class.
+
+    A communicating class is called closed if \(\forall i \in C, i \to j \implies j \in C\).
+\end{definition} 
+
+\begin{example}
+    The properties that hold in this example are:
+    \[
+        \begin{aligned}
+             1 & \leftrightarrow 2 \\
+             2 & \leftrightarrow 3 \implies 1 & \leftrightarrow 3 \\
+        \end{aligned}
+    \]
+    We also have the following:
+    \[
+        \begin{aligned}
+            3 & \to  4,5,6 \\
+            4 & \to  5,6 \\
+            5 & \leftrightarrow 6 \\
+        \end{aligned}  
+    \]
+    Thus, the following can be concluded:
+    \[
+        \begin{aligned}
+        \text{Communicating Classes} &= \{1,2,3\}, \{4\}, \{5,6\}\\
+        \text{Closed Groups} &=  \{5,6\}
+        \end{aligned}
+    \]
+\end{example}
+
+\subsection{Strong Markov Property}
+\begin{definition}[Stopping Time]
+    A random variable \(T : \Omega \rightarrow \{0,1,\dots \} \) is called a stopping time if for any \(n \geq 0\),
+    the occurance or non occurance of the event \(\{T = n\}\) can be determined based only on
+     the values of \(X_0, X_1, \dots , X_n\).  
+\end{definition}
+\begin{example} The following are examples of stopping times:
+    \item \emph{First passage time}:
+    \[
+        T_j = \inf \{n \geq 1 : X_n = j\}
+    \]
+    \item \emph{Last passage time}:
+    \[
+        T_j = \sup \{n \geq 0 : X_n = j\}
+    \]
+\end{example}
+\begin{definition}[Strong Markov Property]
+    Let \((X_n)_{n \geq 0}\) be a markov chain \((\mathcal{S} , \mathcal{P} , \mu )\) and let \(T\), be a stopping
+    time. Then, conditional on \(T < \infty \) and \(X_T = i\), the process \((X_{T+n})_{n \geq 0}\) is a markov
+    chain with initial distribution \(\delta _i\) and is independent of \(X_0, X_1, \dots , X_T\).
+\end{definition}
+
+\subsection{Recurrance and Transience}
+Let \((X_n)_{n \geq 0}\) be the markov chain \(\langle \mathcal{S} , \mathcal{P} , \nu \rangle\).
+\begin{definition}[Recurrence]
+    A state \(i\) is called recurrent if:
+    \[
+        \mathbb{P}_i (X_i = 1 \text{ for infinitely many } n) = 1
+    \] 
+\end{definition}
+\begin{definition}[Transience]
+    A state \(i\) is called transient if:
+    \[
+        \mathbb{P}_i (X_i = 1 \text{ for infinitely many } n) < 1
+    \]
+\end{definition}
+Loosly, a recurrent state is one that the markov chain keeps visiting, while a transient state is one that
+the markov chain never visits from some time on.
+
+\begin{definition}[Passage Time]
+    First Passage Time to state \(j\):
+    \[
+        T_j \coloneqq  \inf \{n \geq 1 : X_n = j\}
+    \]
+    or,
+    \[
+        T_j : \Omega \to \{0,1,2,\dots \} \cup \{\infty\}
+    \]
+    rth passage time to state \(j\): We can define this inductivly as follows:
+    \[
+        T_j^{(0)} = 0 \implies T_j^{(1)} = T_j
+    \]
+    \[
+        \implies T_j^{(r+1)} = \inf \{n > T_j^{(r)} : X_n = j\}
+    \]
+    rth excursion or sojorn time:
+    \[
+        S_j^{(r)} = \begin{dcases}
+            T_j^{(r)} - T_j^{(r-1)} & \text{if } T_j^{(r-1)} < \infty \\
+            0 & \text{otherwise}
+        \end{dcases}
+    \]
+\end{definition}
+\begin{lemma} 
+    For \( r = 2,3,\cdots \) condintional on \(T_i^{(r-1)} < \infty \), \(S_i^r\) is independent
+    of \(X_m\) for \(0 < m < T_i^{(r-1)}\). Further,
+    \[
+        \mathbb{P}_i (S_i^r = n \mid T_i^{(r-1)} < \infty) = \mathbb{P}_i(T_i = n)  
+    \]
+\end{lemma}
+\begin{proof}
+    \[
+        \{T_i^{(r-1)}\} \subseteq \{X_{T_i^{(r-1)}}\}
+    \]
+    \[
+        \therefore \{T_i^{(r-1)}\} = \{T_i^{(r-1)}\} \cap \{X_{T_i^{(r-1)}} = i\}
+    \]
+    This implies conditioning on the event \(\{T_i ^{(r-1)} < \infty \} \) is equivalent
+    to conditioning on \(\{T_i^{(r-1)}\} < \infty \) and \( \{X_{T_i^{(r-1)}} = i\} \). Further
+    \(T_i^{r-1}\) is a stopping time. Thus, conditional on \(\{T_i^{(r-1)} < \infty\} \text{ and } \{
+        X_{T_i^{(r-1)} = i}\} \)
+    \[
+        {\left( 
+            X_{T_j^{(r-1)}}
+         \right)}_{(n \geq 0)} \text{ is a markov chain } 
+    \]
+    Now,
+    \[
+        \mathbb{P} (
+            S_i^{(r)} = n \mid T_i^{(r-1)} < \infty
+            ) 
+    \]
+    \[
+        \begin{aligned}
+                &= \mathbb{P} (S_i^{(r)} = n \mid T_i^{(r-1)} < \infty, X_{T_i^{(r-1)}} = i) \\
+                &= \mathbb{P} (
+                    X_{T_i^{(r-1)} + 1} \neq i, \dots , X_{T_i^{(r-1)} + n} = i 
+                \mid T_i^{(r-1)} < \infty, X_{T_i^{(r-1)}} = i) \\
+                &= \mathbb{P} (
+                    X_1 \neq i, \dots , X_n = i \mid X_0 = i
+                ) \\
+                &= \mathbb{P}_i (T_i = n) \\
+            \end{aligned}
+    \]
+    Completing the proof.
+\end{proof}
+
+\begin{definition}[Number of Visits]
+    \[
+        V_i = \sum_{n=1}^{\infty} \mathbb{I} \{X_n = i\}
+    \]
+\end{definition}
+Thus, we have the following:
+\[
+    \mathbb{E}_i (V_i) = \mathbb{E}_i \sum_{n=0}^{\infty} \mathbb{I} \{X_n = i\} = 
+    \sum_{n=0}^{\infty} \mathbb{P}_i (X_n = i) = \sum _{n=0}^{\infty} \mathcal{P}_{ii}^{(n)}
+\]
+we can replace the sum with the expectation, using the monotone convergence theorem.
+\begin{lemma}
+    Let \(f_i \coloneqq \mathbb{P} _i(T_i < \infty )\). Now for \(r = 0,1,\dots \) we have:
+    \[
+        \mathbb{P} _i (V_i > r) = f_i^r
+    \] 
+\end{lemma}
+\begin{proof}
+    We can prove this using induction.
+    
+    Base case: \(r = 0\):
+    \[
+        r = 0 \implies  \mathbb{P} _i (V_i > 0) = 1 \text{ and }  f_i^0 = 1
+    \]
+    Thus, the base case holds true trivially.
+
+    Suppose, the given claim holds true for some \(r\). Then,
+    \[
+        \begin{aligned}
+            \mathbb{P} _i (V_i > r+1) &= \mathbb{P}_i (T_i^{(r+1)} < \infty ) \\
+            &= \mathbb{P}_i (T_i^{(r)} < \infty, S_i^{(r+1)} < \infty) \\
+            &= \mathbb{P}_i (T_i^{(r)} < \infty) \mathbb{P}_i (S_i^{(r+1)} < \infty, T_i^{(r)} < \infty) \\
+            &= \mathbb{P} _i (V_i > r) \mathbb{P}_i (T_i < \infty) \\
+            &= f_i^r f_i  = f_i^{r+1}
+        \end{aligned}
+    \] 
+\end{proof}
+Thus, using the above lemmas we can state the following theorem:
+\begin{theorem}
+    Let \((X_n)_{n \geq 0}\) be the markov chain \(\langle \mathcal{S} , \mathcal{P} , \nu \rangle\).
+    Then,
+    \begin{itemize}
+        \item for \(i \in \mathcal{S} \), \(\mathbb{P}_i (T_i < \infty)  = 1 \implies i\) is recurrent, and
+        \[
+            \sum_{n = 0}^{\infty} \mathcal{P}_{ii}^{(n)} = \infty  
+        \]
+        \item for \(i \in \mathcal{S} \), \(\mathbb{P}_i (T_i < \infty)  < 1 \implies i\) is transient, and
+        \[
+            \sum_{n = 0}^{\infty} \mathcal{P}_{ii}^{(n)} < \infty
+        \]
+    \end{itemize}
+\end{theorem}
+\begin{proof}
+    Consider the case of recurrence. We have:
+    \[
+        \mathbb{P} _i (V_i = \infty ) = \mathbb{P} _i \left( 
+            \bigcap_{r=1}^{\infty} \{V_i > r\}
+         \right) 
+    \]
+    Since, \(\{V_i > r\} \supseteq \{V_i > r+1\}\), using the continuity of probability measure, we get:
+    \[
+        \mathbb{P}_i (V_i = \infty) = \lim_{r \to \infty} \mathbb{P}_i (V_i > r) = \lim_{r \to \infty} f_i^r = 1
+    \]
+    \[
+        \implies \mathbb{E} _i (V_i) = \infty \implies \sum_{n=0}^{\infty} \mathcal{P}_{ii}^{(n)} = \infty
+    \]
+    Now, consider the case of transience. Suppose, \(f_i = \mathbb{P}_i(T_i < \infty ) < 1\). Then, we have:
+    \[
+        \sum_{n=0}^{\infty} \mathcal{P}_{ii}^{(n)} = \sum_{n=0}^{\infty}
+         \mathbb{P}_i(T_i = n) = \sum_{n=0}^{\infty} f_i^n = \frac{1}{1-f_i} < \infty
+    \]
+    Hence, \(\mathbb{P}_i (V_i = \infty) = 0\), which implies that \(i\) is transient. 
+\end{proof}
+
+\begin{theorem}
+    Let \(C\) be a communicating class in a Markov Chain. Then either all states in \(C\)
+    are recurrent or all states in \(C\) are transient.
+\end{theorem}
+\begin{proof}
+    Let \(C\) be a communicating class. Suppose \(i \in C\) is transient.
+    \[
+        \implies \sum_{n=0}^{\infty} \mathcal{P}_{ii}^{(n)} < \infty
+    \]
+    Let \(j \in C \text{ and }  \exists n,m \geq 0 \) such that \(\mathcal{P}_{ij}^{(n)} > 0\) and \(\mathcal{P}_{ji}^{(m)} > 0\).
+    Then, for \(r \geq  0\):
+    \[
+        \mathcal{P}_{jj}^{(n+m+r)} \geq \mathcal{P}_{ji}^{(m)} \mathcal{P}_{ii}^{(r)} \mathcal{P}_{ij}^{(n)}
+    \]
+    \[
+        \implies \mathcal{P}_{jj}^{(r)} \leq \frac{\mathcal{P}_{ii}^{(n + r + m)}}
+        {\mathcal{P}_{ii}^{(n)} \mathcal{P}_{ii}^{(m)}}
+    \]
+    \[
+        \implies \sum_{r=0}^{\infty} \mathcal{P}_{jj}^{(r)} \leq \frac{\sum_{r=0}^{\infty} \mathcal{P}_{ii}^{(n + r + m)}}
+        {\mathcal{P}_{ij}^{(n)} \mathcal{P}_{ji}^{(m)}} < \infty
+    \]
+\end{proof}
+Note that recurrence or transience is a class property. And thus the following theorem can be stated:
+\begin{theorem}
+    Every recuurent class must be closed. And, Every finite closed class is recurrent.
+\end{theorem}
+Note that, infinite closed classes need not be necessarily recurrent. The classic random walk on a line of
+intergers is a classic example.
+
+\subsection{Invariant Distributions}
+\begin{definition}[Invariant Distribution]
+    A distribution \(\Pi\) on \(\mathcal{S}\) is called invariant for the markov chain \(\langle \mathcal{S} , \mathcal{P} , \nu \rangle\)
+    if:
+    \[
+        \Pi = \Pi \mathcal{P}
+    \]
+\end{definition}
+Thus, a stationery distribution is a left eigenvector of the transition matrix \(\mathcal{P}\) with eigenvalue 1.
+Note that in contrast to linear algebra, vectors are represented as row vectors.
+\begin{theorem}
+    Let \({(X_n)}_{n \geq 0}\) be the markov chain \(\langle \mathcal{S} , \mathcal{P} , \nu \rangle\).
+    Then \({X_{m+n} }_{n \geq 0}\) is also a markov chain with the distribution \(\langle \mathcal{S}
+     , \mathcal{P} , \Pi \rangle\), where \(\Pi\) is the invariant distribution of \(\mathcal{P}\).
+\end{theorem}
+\begin{proof}
+    We know that,
+    \[
+        \mathbb{P} (X_n = j) = {(\nu \mathcal{P}^n)}_j
+        \implies \mathbb{P} (X_n = j) = {(\Pi \mathcal{P}^n)}_j = \Pi_j
+    \]
+    Now,
+    \[
+        \mathbb{P} (X_m = i_0, X_{m+1} = i_1, \dots , X_{m+n} = i_n)  
+    \]
+    \[
+        \begin{aligned}
+            & = \mathbb{P} (X_m = i_0) \mathbb{P} (X_{m+1} = i_1 \mid X_m = i_0) 
+            \dots \mathbb{P} (X_{m+n} = i_n \mid X_{m+n-1} = i_{n-1}) \\
+            & = \Pi_{i_0} \mathcal{P}_{i_0 i_1} \dots \mathcal{P}_{i_{n-1} i_n} \\
+        \end{aligned}
+    \]
+    \(\implies \left( X_{m+n} \right)_{n \geq 0}\) is a markov chain with the distribution \(\Pi \)  
+\end{proof}
+
+\begin{theorem}
+    Every markov chain on a finite set space has at least one invariant distribution.
+\end{theorem}
+\begin{proof}
+    Since \(\mathcal{P} \) is a row stocastic matrix:
+    \[
+        \mathcal{P} \mathbf{1} = \mathbf{1}  
+    \]
+    Since \(\mathcal{P} \) and \(\mathcal{P} ^{\top} \) have the same eigenvalues, we have:
+    \[
+        \implies \exists \nu  \neq 0 \text{ such that }  \nu \mathcal{P} = \nu
+    \]
+    Since, \(\mathcal{P}\) is a real valued matrix, taking the complex conjugate of the above equation, we get:
+    \[
+        \overline{\nu} \mathcal{P} = \overline{\nu}
+    \]
+    Thus, adding and subtracting the above two equations, we get:
+    \[
+        \Re (\nu) \mathcal{P} = \Re (\nu) \quad \text{ and } \quad  \Im (\nu) \mathcal{P} = \Im (\nu)
+    \]
+    Since, \(v \neq  0\), atleast one of \(\Re (\nu) \) or \(\Im (\nu) \) is non zero.
+    Thus, if \(\mathcal{P} \) has a complex left eigenvector, then it has a real left eigenvector.
+
+    Now, without loss of generality, let \(u\) be a real valued vector such that:
+    \[
+        u \mathcal{P} = u
+    \]
+    Defining,
+    \[
+        u_+(i) \coloneqq  \max \{u(i), 0\} \quad \text{ and } \quad u_-(i) \coloneqq  \max \{-u(i), 0\}
+    \]
+    we have:
+    \[
+        \implies u = u_+ - u_-
+    \]
+    letting,
+    \[
+        u_+ \mathcal{P} \eqqcolon u_+ \quad \text{ and } \quad u_- \mathcal{P} \eqqcolon  u_-
+    \]
+    we get,
+    \[
+        u \mathcal{P} = u_+ \mathcal{P} - u_- \mathcal{P} = y_+ - y_-  
+    \]
+    Suppose: \( u_+(i) > 0  \implies  u_-(i) = 0\).
+    \[
+        \implies y_+(i) - y_-(i) = u_+(i) \implies y_+(i) = u_+(i) \text{ and } y_-(i) = 0 
+    \]
+    Similiarly
+    \[
+        u_+(i) = 0 \implies u_-(i) > 0 \implies y_+(i) = 0 \text{ and } y_-(i) = u_-(i)
+    \]
+    Thus, we can conclude:
+    \[
+        u_+ \mathcal{P} = u_+ \quad \text{ and } \quad u_- \mathcal{P} = u_-
+    \]
+    Since \(u \neq  0\), either of \(u_+\) or \(u_-\) is non zero. 
+    Thus, we have found a non zero left real valued eigenvector of \(\mathcal{P}\).
+
+    Let \(z\) be the non zero vector among  \(u_+\) or \(u_-\). Then, we have:
+    \[
+        z \mathcal{P} = z \quad \text{ and } \quad z \neq 0, \; z_i > 0 \implies \sum_{i} z_i > 0 
+    \]
+    Rescaling the vector we get,
+    \[
+        \frac{z}{\sum_i z_i} \mathcal{P} = \frac{z}{\sum_i z_i}
+    \]
+    Defining \(\Pi(i) = \dfrac{z}{\sum_i z_i}\), we get:
+    \[
+        \Pi \mathcal{P} = \Pi
+    \]    
 \end{proof}
