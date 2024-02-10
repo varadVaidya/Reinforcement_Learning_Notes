@@ -434,7 +434,7 @@ the markov chain never visits from some time on.
         \mathbb{P}_i (S_i^r = n \mid T_i^{(r-1)} < \infty) = \mathbb{P}_i(T_i = n)  
     \]
 \end{lemma}
-\begin{proof}
+\begin{lemmaproof}
     \[
         \{T_i^{(r-1)}\} \subseteq \{X_{T_i^{(r-1)}}\}
     \]
@@ -469,7 +469,7 @@ the markov chain never visits from some time on.
             \end{aligned}
     \]
     Completing the proof.
-\end{proof}
+\end{lemmaproof}
 
 \begin{definition}[Number of Visits]
     \[
@@ -488,7 +488,7 @@ we can replace the sum with the expectation, using the monotone convergence theo
         \mathbb{P} _i (V_i > r) = f_i^r
     \] 
 \end{lemma}
-\begin{proof}
+\begin{lemmaproof}
     We can prove this using induction.
     
     Base case: \(r = 0\):
@@ -507,7 +507,7 @@ we can replace the sum with the expectation, using the monotone convergence theo
             &= f_i^r f_i  = f_i^{r+1}
         \end{aligned}
     \] 
-\end{proof}
+\end{lemmaproof}
 Thus, using the above lemmas we can state the following theorem:
 \begin{theorem}
     Let \((X_n)_{n \geq 0}\) be the markov chain \(\langle \mathcal{S} , \mathcal{P} , \nu \rangle\).

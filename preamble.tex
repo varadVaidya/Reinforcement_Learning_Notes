@@ -452,6 +452,7 @@
 \colorlet{claim}{mygreen!85!black}
 \colorlet{corollary}{mypurple!85!black}
 \colorlet{proof}{theorem}
+\colorlet{lemmaproof}{lemma}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %  Create Environments Styles Based on Given Parameter  %
@@ -525,6 +526,7 @@
   \createnewtheoremstyle{thmsolutionbox}{}{}
 
   \createnewtheoremstyle{thmproofbox}{qed=\qedsymbol}{}
+  \createnewtheoremstyle{thmlemmaproofbox}{qed=\qedsymbol}{}
   \createnewtheoremstyle{thmexplanationbox}{}{}
 }{
   % Environments with color.
@@ -542,6 +544,7 @@
   \createnewcoloredtheoremstyle{thmexercisebox}{exercise}{}{}
 
   \createnewcoloredtheoremstyle{thmproofbox}{proof}{qed=\qedsymbol}{backgroundcolor=white}
+  \createnewcoloredtheoremstyle{thmlemmaproofbox}{lemmaproof}{qed=\qedsymbol}{backgroundcolor=white}
   \createnewcoloredtheoremstyle{thmexplanationbox}{example}{qed=\qedsymbol}{backgroundcolor=white}
 }
 \makeatother
@@ -558,6 +561,7 @@
 \declaretheorem[numberwithin=section, style=thmlemmabox,       name=Lemma]{lemma}
 \declaretheorem[numberwithin=section, style=thmexercisebox,    name=Exercise]{exercise}
 \declaretheorem[numbered=no,          style=thmproofbox,       name=Proof]{replacementproof}
+\declaretheorem[numbered=no,          style=thmlemmaproofbox,       name=Proof]{replacementlemmaproof}
 \declaretheorem[numbered=no,          style=thmexplanationbox, name=Proof]{expl}
 \declaretheorem[numberwithin=section, style=thmdefinitionbox,  name=Definition]{definition}
 
@@ -667,7 +671,7 @@
 
 \renewenvironment{proof}[1][\proofname]{\vspace{-10pt}\begin{replacementproof}}{\end{replacementproof}}
 \newenvironment{explanation}[1][\proofname]{\vspace{-10pt}\begin{expl}}{\end{expl}}
-
+\newenvironment{lemmaproof}[1][\proofname]{\vspace{-10pt}\begin{replacementlemmaproof}}{\end{replacementlemmaproof}}
 \theoremstyle{definition}
 
 \newtheorem*{notation}{Notation}
