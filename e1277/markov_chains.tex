@@ -564,7 +564,7 @@ Thus, using the above lemmas we can state the following theorem:
         {\mathcal{P}_{ii}^{(n)} \mathcal{P}_{ii}^{(m)}}
     \]
     \[
-        \implies \sum_{r=0}^{\infty} \mathcal{P}_{jj}^{(r)} \leq \frac{\sum_{r=0}^{\infty} \mathcal{P}_{ii}^{(n + r + m)}}
+        \implies \sum\limits_{r=0}^{\infty} \mathcal{P}_{jj}^{(r)} \leq \frac{\sum_{r=0}^{\infty} \mathcal{P}_{ii}^{(n + r + m)}}
         {\mathcal{P}_{ij}^{(n)} \mathcal{P}_{ji}^{(m)}} < \infty
     \]
 \end{proof}
@@ -681,3 +681,192 @@ Note that in contrast to linear algebra, vectors are represented as row vectors.
         \Pi \mathcal{P} = \Pi
     \]    
 \end{proof}
+
+\begin{definition}
+    A markov chain is said tp be irreducible if the whole state space is one communicating class. i.e
+    \[
+        i \leftrightarrow j \quad \forall\; i,j \in \mathcal{S}
+    \]
+\end{definition}
+\begin{theorem}\label{thm:gamma}
+    Let \(\langle \mathcal{S} , \mathcal{P} , \nu \rangle\) be an irreducible
+    and recurrent markov chian. Further let 
+    \[
+        \gamma _i^k = \mathbb{E}_k  \sum_{n=0}^{T_k - 1} \mathbb{I} \{X_n = i\} 
+    \]
+    and \(\gamma ^k = (\gamma _1^k , \gamma _2^k, \dots , \gamma _{|\mathcal{S}|}^k)\).
+    Then, the following holds:
+    \begin{enumerate}
+        \item \(\gamma ^k_k = 1\)
+        \item \(\gamma ^k P = \gamma ^k\)
+        \item \(0 < \gamma ^k < \infty\)  
+    \end{enumerate}
+\end{theorem}
+\begin{proof}
+    \textbf{(1)}: This is true by the definition of \(\gamma _i^k\).\\
+    \textbf{(2)}: We have:
+    \[
+        \begin{aligned}
+            \gamma _j^k &= \mathbb{E}_k  \sum_{n=0}^{T_k - 1} \mathbb{I} \{X_n = j\}\\
+            & = \mathbb{E}_k  \sum_{n=1}^{T_k} \mathbb{I} \{X_n = j\} = 
+            \mathbb{E}_k  \sum_{n=0}^{\infty } \mathbb{I} \{X_n = j, n \leq T_k\} \\
+            & = \sum_{n=1}^{\infty} \mathbb{P}_k (X_n = j, n \leq T_k) \hfill \qquad \text{ //by monotone convergence theorem} \\
+            & = \sum_{n=1}^{\infty} \sum_{i \in \mathcal{S}} \mathbb{P}_k (X_n = j, X_{n-1} = i, n \leq T_k) \\
+            & = \sum_{n=1}^{\infty} \sum_{i \in \mathcal{S}} \mathbb{P}_k (X_n = j \mid 
+            X_{n-1} = i, n \leq T_k) \mathbb{P}_k (X_{n-1} = i, n \leq T_k) \\ 
+            & = \sum_{n=1}^{\infty} \sum_{i \in \mathcal{S}} \mathcal{P}_{ij} \mathbb{P}_k (X_{n-1} = i, n \leq T_k) \\
+        \end{aligned}
+    \]
+    Since we are summing over non negative sum, we can interchange the summation. Thus, we get:
+    \[
+        \begin{aligned}
+            \gamma _j^k &= \sum_{i \in \mathcal{S}} \mathcal{P}_{ij} \sum_{n=1}^{\infty} \mathbb{P}_k (X_{n-1} = i, n \leq T_k) \\
+            & = \sum_{i \in \mathcal{S}} \mathcal{P}_{ij} 
+            \underbrace{\sum_{m=0}^{\infty}\mathbb{P}_k (X_m = i , m \leq T_k - 1)}_
+            {\mathbb{E}_k \sum\limits_{m=0}^{T_k - 1} \mathbb{I} \{X_m = i\}} \\
+            & = \sum_{i \in \mathcal{S}} \mathcal{P}_{ij} \gamma _i^k
+        \end{aligned}
+    \]
+    \[
+        \implies  \gamma ^k \mathcal{P} = \gamma ^k
+    \]
+    \textbf{(3)}: We will use the fact that the given markov chain is irreducible.
+    \[
+        \implies \mathcal{P}_{ij}^{(n)} > 0 \quad \forall \; i,j \in \mathcal{S}  
+    \]
+    Since we know that \(\gamma ^k\) is invariant \(\implies \gamma ^k = \gamma ^k \mathcal{P} = \gamma ^k \mathcal{P}^n\).
+    Thus, we have:
+    \[
+        \gamma ^k_k = \sum_j \gamma _j^{k}\mathcal{P}_{jk}^{(n)} \geq \gamma _i^k \mathcal{P}_{ik}^{(n)}
+    \]
+    The above statement holds, since sum of non negative quantities is greater than or equal to any of the 
+    individual quantities.
+    Now,
+    \[
+        \gamma _k^k = 1 \quad \because \mathcal{P}_{ik}^{(n)} > 0 \implies \gamma _i^k < \infty  
+    \]
+    Now, to show \(\gamma _i^k > 0\). Let \(\mathcal{P}_{ki}^{(m)} > 0 \)
+    \[
+        \implies  \gamma _i^k = \sum_j \gamma _j^k \mathcal{P}_{ji}^{(m)} \geq \gamma _k^k \mathcal{P}_{ki}^{(m)}
+        = \mathcal{P}_{ki}^{(m)} > 0
+    \]
+    \[
+        \implies 0 < \gamma _i^k < \infty  
+    \]
+    Completing the proof.
+\end{proof}
+\begin{theorem}
+    Let \(\langle \mathcal{S} , \mathcal{P} , \nu \rangle\) be an irreducible markov chain. Further, let 
+    \(\lambda\) be an invariant measure such that \(\lambda _k = 1\), then \(\lambda \geq  \gamma ^k\). If 
+    \(\langle \mathcal{S} ,\mathcal{P} ,\nu \rangle \) is additionally recurrent, then \( \gamma^k = \lambda\).
+\end{theorem}
+\begin{proof}
+    NOTE: This theorem also applies with inifinte markov chain.\\
+    Since \(\lambda\), is a measure, thus, \(\lambda(i)\) is non negtive. Now, since \(\lambda\) is invariant, we have:
+    \[
+        \lambda = \lambda \mathcal{P} \implies \lambda(j) = \sum_{i \in \mathcal{S}} \lambda(i) \mathcal{P}_{ij}
+        = \sum_{i_1 \neq k} \lambda(i) \mathcal{P}_{ij} + \mathcal{P}_{kj}
+    \]
+    Massaging \(\mathcal{P}_{kj} \), we get:
+    \[
+        \mathcal{P}_{kj} = \mathbb{P} (X_1 = j \mid X_0 = k) = \mathbb{P}_k (X_1 = j) = \mathbb{P}_k (X_1 = j, T_k > 1)
+    \]
+    Thus,
+    \[
+        \begin{aligned}
+            \lambda _j &= \sum_{i_1 \neq k} \sum_{i_2 \in \mathcal{S} } 
+            \lambda_{i_2} \mathcal{P}_{i_2 i_1} \mathcal{P}_{i_1 j} + \mathbb{P}_k (X_1 = j, T_k > 1) \\
+            & = \sum_{i_1 \neq k} \sum_{i_2 \neq k} \lambda_{i_2} \mathcal{P}_{i_2 i_1}
+             \mathcal{P}_{i_1 j} + \mathbb{P}_k (X_1 = j, T_k > 1) + \mathbb{P}_k (X_2 = j, T_k > 2) \\
+        \end{aligned}
+    \]
+    From induction, we get:
+    \[
+        \begin{aligned}
+            \lambda _j &= \underbrace{\text{ some expression }}_{\text{non negative}} +
+            \sum_{n=1}^{m} \mathbb{P}_k (X_n = j, T_k > n)\\
+            \implies  \lambda _j &\geq \sum_{n=1}^{\infty} \mathbb{P}_k (X_n = j, T_k > n) = \gamma _j^k \hfill 
+            \qquad \text{ //by \autoref{thm:gamma}}\\
+        \end{aligned}
+    \]
+    Thus, we have:
+    \[
+        \lambda \geq \gamma ^k
+    \]
+    Now, if the markov chain is recurrent, then we have to show that \(\lambda = \gamma ^k\).
+    Let \(\mu = \lambda -\gamma ^k\). Thus, \(\mu \mathcal{P} = (\lambda - \gamma ^k) \mathcal{P} = \lambda - \gamma ^k = \mu\).
+    Now,
+    \[
+        \mu _k = \lambda _k - \gamma _k^k = 1 - 1 = 0 \quad \mu = \mu \mathcal{P}
+    \]
+    Choose \(i,k \in \mathcal{S}\) such that \(\mathcal{P}_{ik}^{(n)} > 0\). Then,
+    \[
+        \begin{aligned}
+            0 = \mu _k &= \sum_{j \in \mathcal{S}} \mu _j \mathcal{P}_{jk}^{(n)} \\
+            & \geq \mu _i \mathcal{P}_{ik}^{(n)} \implies \mu _i = 0 \forall \; i \in \mathcal{S}
+        \end{aligned}
+    \]
+    \[
+        \implies \mu = 0 \implies \lambda = \gamma ^k
+    \]
+    Completing the proof.
+\end{proof}
+\begin{theorem}
+    Let \(\langle \mathcal{S} , \mathcal{P} , \nu \rangle\) be a finite irreducible markov chain. Then, \(\Pi\) is 
+    unique and \(\Pi _i = \frac{1}{m_i}\), where \(m_i = \mathbb{E}_i (T_i)\).  
+\end{theorem}
+\begin{proof}
+    The intuitive meaning of \(m_i\) is the expected time to return to state \(i\), starting from state \(i\).\\
+    Since the markov chain is finite, there exits a invariant distribution \(\Pi\) such that \(\Pi = \Pi \mathcal{P} \).\\
+    Now,
+    \[
+        \pi _k = \sum_{j \in \mathcal{S}} \pi _j \mathcal{P}_{jk}^{(n)} \geq \pi _i \mathcal{P}_{ik}^{(n)} > 0
+    \]
+    Thus, \(\pi _i > 0\). Now, let \(\lambda \coloneqq \frac{\Pi}{\pi _k}\) Thus, \(\lambda _k = 1\)
+    \[
+        \implies  \lambda \mathcal{P}  = \frac{1}{\pi _k} \Pi \mathcal{P} = \frac{1}{\pi _k} \Pi = \lambda
+    \]
+    \[
+        \implies \lambda \text{ is an invariant measure } 
+    \]
+    \(\because\) chain is irreducible and from \autoref{thm:gamma}, \(\lambda = \gamma ^k\)
+    \[
+        \implies \frac{\Pi}{\pi_k} = \gamma ^k \implies \sum_i \frac{\Pi _i}{\pi _k} = \sum_i \gamma _i^k 
+        \implies \frac{1}{\pi_k} = \sum_i \gamma ^k
+    \]
+    \[
+        \because \gamma^k > 0 \implies \pi _k = \frac{1}{\sum\limits_i \gamma ^k}
+    \]
+    Now,
+    \[
+        \implies \sum_{i} \gamma _i^k = \sum_{i \in \mathcal{S}}\sum_{n = 1}^{\infty} \mathbb{P}_k (X_n = i, n \leq T_k)
+    \]
+    Now, sum is over all positive quantities, summation can be interchanged. Thus, we get:
+    \[
+        \begin{aligned}
+            \sum_i \gamma _i^k &= \sum_{n=1}^{\infty}\sum_{i \in \mathcal{S}} \mathbb{P}_k (X_n = i, n \leq T_k)\\
+            &= \sum_{n=1}^{\infty} \mathbb{P}_k (T_k \geq n) = \mathbb{E}_k (T_k) = m_k
+            \implies \pi _k &= \frac{1}{\mathbb{E}_k (T_k)}
+        \end{aligned}
+    \]
+    Thus, completing the proof.
+\end{proof}
+\begin{definition}
+    A state \(i\), is sais to be a aperiodic if \(\mathcal{P}_{ii} > 0\) for sufficient large \(n\).  
+\end{definition}
+\begin{lemma}
+    \(\langle \mathcal{S} , \mathcal{P} , \sigma  \rangle\) is an irreducible markov chain further, suppose 
+    \(k \in \mathcal{S} \) is aperiodic. Thus, every \( i \in \mathcal{S}\), is aperiodic. Infact, 
+    \(\mathcal{P}_{ii}^{(n)} > 0, \; \forall i,j \in \mathcal{S}\) for sufficient large \(n\).
+\end{lemma}
+\begin{theorem}
+    Let \(\langle \mathcal{S} , \mathcal{P} , \nu \rangle\) be a finite irreducible and aperiodic markov chain. Then,
+    irrespective of the initial distribution, the markov chain converges to the unique invariant distribution \(\Pi\). i.e.
+    \[
+        \lim_{n \to \infty} \mathbb{P} (X_n = i) = \Pi _i \quad \forall \; i \in \mathcal{S}  
+    \]
+    Further,
+    \[
+        \lim_{n \to \infty} \mathcal{P}_{ij}^{(n)} = \Pi _j
+    \] 
+\end{theorem}
