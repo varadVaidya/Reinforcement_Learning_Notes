@@ -37,6 +37,7 @@
 \usepackage{multirow}
 \usepackage{pifont}% http://ctan.org/pkg/pifont
 \newcommand{\xmark}{\ding{55}}%
+\usepackage{xfrac}
 \usetikzlibrary{trees}
 \usetikzlibrary{shapes,arrows,positioning}
 \renewcommand\qedsymbol{$\Laughey$}
@@ -207,6 +208,7 @@
   \setcounter{corollary}{0}
   \setcounter{lemma}{0}
   \setcounter{exercise}{0}
+  \setcounter{assumption}{0}
 
   \@ifclasswith\class{nocolor}{
     \setcounter{definition}{0}
@@ -459,7 +461,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \mdfsetup{skipabove=1em,skipbelow=0em}
-
+\newtheorem{assumption}{Assumption}
 %%%%%%%%%%%%%%%%%%%%%%
 %  Helpful Commands  %
 %%%%%%%%%%%%%%%%%%%%%%

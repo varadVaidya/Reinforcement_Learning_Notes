@@ -339,8 +339,34 @@ and is independent of \(X_1, X_2, \dots , X_m\), where \(\delta _i\) is the dist
     A communicating class is called closed if \(\forall i \in C, i \to j \implies j \in C\).
 \end{definition} 
 
-\begin{example}
-    The properties that hold in this example are:
+\begin{example}\label{ex:commclass}
+    The properties that hold in this example are:\\
+    \begin{center}
+        \begin{tikzpicture}[
+            node distance=2.5cm,
+            state/.style={circle, draw, fill=white, minimum size=0.75cm},
+            ]
+            \node (S1) [state] {$1$};
+            \node (S3) [below right of=S1] [state] {$3$};
+            \node (S2) [below left  of=S3] [state] {$2$};
+            \node (S4) [above right of=S3] [state] {$4$};
+            \node (S5) [below right of=S3] [state] {$5$};
+            \node (S6) [right of=S5] [state] {$6$};
+            
+            \draw[->] (S1) edge node[left] {$\frac{1}{2}$} (S2);
+            \draw[->] (S1) edge node[above right] {$\frac{1}{3}$} (S3);
+            \draw[->] (S2) edge node[above left] {$1$} (S3);
+            \draw[->] (S4) edge node[right] {$1$} (S5);
+            \draw[->] (S3) edge node[below right] {$\frac{1}{3}$} (S4);
+            \draw[->] (S3) edge node[below left] {$\frac{1}{3}$} (S5);
+            \path[->] (S5) edge [bend left] node[above] {\(1\)} (S6);
+            \path[->] (S6) edge [bend left] node[below] {\(1\)} (S5);
+            % \draw[->, bend angle=45] (S4) edge node[above] {$f$} (S1);
+            % \draw[->] (S5) edge node[below] {$g$} (S2);
+            % \draw[->] (S5) edge node[right] {$h$} (S6);
+            % \draw[->] (S6) edge node[below, sloped] {$i$} (S4);
+        \end{tikzpicture}\\
+    \end{center}
     \[
         \begin{aligned}
              1 & \leftrightarrow 2 \\

@@ -1,0 +1,406 @@
+\section{Markov Decision Processes and Dynamic Programming}
+
+\subsection{Controllrd Mrkov Chain}
+let \(\mathcal{S} \) be some finite state space and for all \(i \in \mathcal{S} \) let 
+\(\mathcal{A} (i)\) denote the set of feasible actions at state \(i\). Then a discrete time stocastic
+process \(\{X_n\}_{n \geq  0}\) is said to be controlled markov chia, with initial distribution \(\nu \) 
+and transition matrix \(\mathcal{P} \in \mathbb{R} ^{n\times n}\) or a markov chain controlled by \(\mathcal{Z} _n\)
+if
+\begin{multline*}
+    \mathbb{P} (X_{n+1} = i_{n+1} \mid  X_0 = i+0, \mathcal{Z}_0 = a_0, \dots , X_n = i_n, \mathcal{Z}_n = a_n)\\
+    = \mathbb{P} (X_{n+1} = i_{n+1} \mid X_n = i_n, \mathcal{Z}_n = a_n) \equiv \mathcal{P} (i_{n+1} \mid i_n, a_n)
+\end{multline*}
+where \(\mathcal{S}  = \vert \mathcal{S}  \vert , A = \left\vert \bigcup\limits_i 
+\mathcal{A} (i) \right\vert \), if \(\mathbb{P} (X_0 = i) = \nu (i)\) 
+\subsection{Markov Decision Process}
+An Markov Decision Process is a acontrolled markov chain with an additional cost strtucture.
+\[
+    g : \mathcal{S} \times \mathcal{A} \times \mathcal{S} \to \mathbb{R}
+\]
+That is \(g(i,a,j)\) is the cost incurred if \(X_n = i, \mathcal{Z}_n = a, X_{n+1} = j\).\\
+We denote a MDP with \(\langle \mathcal{S} ,\mathcal{A} ,\mathcal{P} ,g,\nu  \rangle \) \\
+The loose goal with a MDP is to find the sequence of action that minimizes some long term cost. We can
+formulate this in 3 different yet similar settings:\\
+
+\textbf{Finite Horoxom MDP}: here \(N<\infty \) and the end of the horizon is deterministic. Thus we
+can define:
+\[
+    J_z(i) = \mathbb{E} \left[
+    \sum_{n=0}^{N-1} \alpha ^n g(X_n,\mathcal{Z}_n,X_{n+1}) + \alpha ^N G(X_N) \;\middle|\; X_0 = i
+     \right]
+\]
+The term \(J_z(i)\) is cost to go from the state \(i\) to the end of the horizon. and 
+\(\alpha  = [0,1]\) is called as the discount factor.\\
+
+\textbf{Stocastic Shortest Path}: Here \(N<\infty \) where \(N\) itself is random. We can define the
+cost to go in this setting as:
+\[
+    J_z(i) = \mathbb{E} \left[
+    \sum_{n=0}^{N-1} \alpha ^n g(X_n,\mathcal{Z}_n,X_{n+1}) + \alpha ^N G(X_N) \;\middle|\;  X_0 = i
+     \right]  
+\]
+Note that here the discount factor \(\alpha \) can be \(1\).\\
+
+\textbf{Inifinite Horizon MDP}: Here \(N = \infty \) and we can define the cost to go as:
+\[
+    J_z(i) = \mathbb{E} \left[ 
+    \sum_{n=0}^{\infty} \alpha ^n g(X_n,\mathcal{Z}_n,X_{n+1}) \;\middle|\;  X_0 = i
+     \right]
+\]
+In the case of 
+\begin{definition}[Policy]
+    Let \(M\equiv \langle \mathcal{S} ,\mathcal{A} ,\mathcal{P} ,g,\rangle \) be a MDP. Then 
+    \(\pi \equiv \mu _k, \; k = 0 \) is said to be a poilicy or a stragy w.r.t.\  \(M\) if:
+    \[
+        \mu _k : \mathcal{S} \to \mathcal{A} = \bigcup\limits_{i\in \mathcal{S} } \mathcal{A} (i)  
+    \]
+    that is each \(\mu _k\) is a function that maps a state to a action.\\ 
+\end{definition}
+We say that a policy \(\pi \) is admissiaabvle if \(\mu _k \in \mathcal{A}(i)\; \forall i,k\),
+where \(\mathcal{A} (i)\) is the set of feasible or allowable actions at that state \(i\)
+\begin{definition}[Expected Cost to Go]
+    For finite horizon MDP or SSP, the expected cost to go under policy \(\pi\) is given by:
+    \[
+        J^{\pi}(i) = \mathbb{E} \left[
+        \sum_{n=0}^{N-1} \alpha ^n g(X_n,\mathcal{Z}_n,X_{n+1}) + \alpha ^N G(X_N) \;\middle|\; X_0 = i
+         \right] 
+    \]
+    For Inifinite Horizon MDP, the expected cost to go under policy \(\pi\) is given by:
+    \[
+        J^{\pi}(i) = \mathbb{E} \left[ 
+        \sum_{n=0}^{\infty} \alpha ^n g(X_n,\mathcal{Z}_n,X_{n+1}) \;\middle|\;  X_0 = i
+         \right]
+    \]
+\end{definition}
+\begin{definition}[Optimal Cost to Go and Optimal Policy]
+    \[
+        J^{\pi} (i) = \inf _{\pi} J^{\pi} (i) 
+    \]
+    And the policy \(\pi ^{\star} \) is said to be optimal if:
+    \[
+        J^{\pi ^{\star}} (i) = J^{\star} (i) \quad \forall i \in \mathcal{S} 
+    \] 
+\end{definition}
+\subsection{Finite Horizon Problems}
+To find the the optimal policy for finite horizon problems, we will make use of the
+dynamic programming approach. Consider the case where there is only one stage i.e. \(N=1\).
+Then the cost to go following a policy \(\pi \) is given by:
+\[
+    \begin{aligned}
+        J^{\pi} (i) &= \mathbb{E} \left[ g(i,\mu _0(i),j) + \alpha G(j) \;\middle|\; X_0 = i \right]\\
+        &= \sum_{j = 1 }^{\mathcal{S} }  \mathbb{P} (j\mid i,\mu _0(i)) \left[ g(i,\mu _0(i),j) + \alpha G(j) \right]
+    \end{aligned}
+\]
+Then, optimal cost to go is by definition:
+\[
+    J^{\star} (i) = \min_\pi  J^{\pi} (i) = \min_{\mu_0} J^{\pi}(i)
+\]
+For any fixed state \(i\), the minimisation over \(\pi \) is same as minimisation over \(\mu _0\) by
+definition. Thus,
+\[
+    J^\pi (i) = \min\limits_{a \in \mathcal{A}_i} \sum_{j=1}^{\mathcal{S}} \mathbb{P} (
+        j \mid  i,a) \left[ g(i,a,j) + \alpha G(j) \right]
+\]
+where \(\mu _0\) is such that,
+\[
+    \mu _0(i) = \argmin_{a \in \mathcal{A}_i} \sum_{j=1}^{\mathcal{S}} \mathbb{P} (
+        j \mid  i,a) \left[ g(i,a,j) + \alpha G(j) \right] \quad \forall i \in \mathcal{S}
+\]
+The interpretation is that optimal control choice with one stage to go must minimise the sum of
+expected cost to go. The DP alogoirthm extendes this idea to a \(N\) stage problem. It states that
+the optimal control choice with \(N\) stages to go must minimise the sum of expected
+present stage cost and expected optimal cost \(J^{\star}_{k-1} \) with \(k-1\) stages to go, discounted
+by \(\alpha\). Thus optimal \(N\) stage cost to go \(J^{\star}_N(i)\) can be computed by:
+\[
+    J^{\star}_N(i) = \min_{a \in \mathcal{A}_i} \sum_{j=1}^{\mathcal{S}} \mathbb{P} (
+        j \mid  i,a) \left[ g(i,a,j) + \alpha J^{\star}_{N-1}(j) \right]
+\]
+starting with,
+\[
+    J^{\star}_0 = G(i) \quad \forall i \in \mathcal{S}
+\]
+To prove this, we can note that any policy can be broken down as: \(\pi ^k \equiv = (\mu_{N-k}, \pi^{k-1} )\)
+\[
+    \begin{aligned}
+        \implies J^{\star} _k(i) &= \min\limits_{(\mu _{N-k}, \pi^{k-1})}
+        \mathbb{E} \left[ g( X_{N-k}, \mu _{N-k}(X_{N-k}), X_{N-k+1}) + \alpha J^{\pi^{k-1} }_{k-1}
+        (X_{N-k+1}) \;\middle|\; X_{N-k} = i \right] \\
+        &= \min\limits_{\mu _{N-k}} \sum_{j=1}^{\mathcal{S}} \mathbb{P} (j\mid i,\mu _{N-k}(i)) \left[ 
+            g(i,\mu _{N-k}(i),j) + \alpha J^{\pi^{k-1} }_{k-1}(j) \right]\\
+        &= \min_{a \in \mathcal{A} _i} \sum_{j=1}^{\mathcal{S}} \mathbb{P} (j\mid i,a) \left[ 
+            g(i,a,j) + \alpha \min _{\pi^{k-1}} J^{\pi^{k-1}}_{k-1}(j) \right]\\
+        &= \min_{a \in \mathcal{A} _i} \sum_{j=1}^{\mathcal{S}} \mathbb{P} (j\mid i,a) \left[
+            g(i,a,j) + \alpha J^{\star}_{k-1}(j) \right]
+    \end{aligned}
+\]
+
+\begin{example}[Chess Match]
+    Aim is to find an optimal strategy for the player for the game \(i\). The player can opt for
+    \[
+            \underbrace{\text{timid play}}_{\text{never wins}}
+     =  \begin{dcases}
+            p_d, &\to \text{ probability of draw} \\
+            1-p_d, &\to \text{ probability of loss}
+        \end{dcases}
+    \]
+    \[
+        \underbrace{\text{bold play}}_{\text{never draws}}
+        =  \begin{dcases}
+               p_w, &\to \text{ probability of win} \\
+               1-p_w, &\to \text{ probability of loss}
+           \end{dcases}
+    \]
+    There are \(N\) games to be played. If the scores are tied after \(N\) games, then the game goes into
+    sudden death mode. i.e. the player who wins the first wins the game.\\
+    We have to find the policy that maximised the prob for win, when the single game reward is:
+    \[
+        \begin{dcases}
+            1, &\text{ if win }\\
+            0.5, &\text{ if draw}\\
+            0, &\text{ if loss} .
+        \end{dcases}
+    \]
+    when the state is given by the net score i.e. points of the player - points of the opponent, with the
+    ternimal reward being:
+    \[
+        G(i) = \begin{dcases}
+            1, &\text{ if } i> 0 ;\\
+            p_w, &\text{ if } i=0  ;\\
+            0, &\text{ otherwise} i<0.
+        \end{dcases}
+    \]
+    Thus, we let,
+    \[
+        J_N(i) = G(i) \quad \forall i \in \mathcal{S}
+    \]
+    Now, we can clearly see:
+    \[
+        J^{\star} _k(i) = \max \{
+            p_d J_{k+1} (i) + (1-p_d)J_{k+1} (i-1), p_w J_{k+1} (i+1) + (1-p_w)J_{k+1} (i-1)
+            \}
+    \]
+    Thus, it is optimal to play bold, starting from \(i\) if:
+    \[
+        p_w J^{\star}_{k+1} + (1-p_w)J^{\star}_{k+1}(i-1) > p_d J^{\star}_{k+1} + (1-p_d)J^{\star}_{k+1}(i-1)
+    \]
+    That is if:
+    \[
+        p_w(J^{\star}_{k+1}(i+1) ) - J^{\star}_{k+1}(i) > p_d(J^{\star}_{k+1}(i) ) - J^{\star}_{k+1}(i-1)
+    \]
+    which holds when,
+    \[
+        \frac{p_w}{p_d} > \frac{J^{\star}_{k+1}(i) - J^{\star}_{k+1}(i-1)}
+        {J^{\star}_{k+1}(i+1) - J^{\star}_{k+1}(i)}
+    \]
+
+    Assume that \(p_d > p_w\), then from dynamic programming:
+    \[
+        J_{N-1} ^{\star} (i) = \max \{
+            p_d J_N ^{\star} (i) + (1-p_d)J_N ^{\star} (i-1), p_w J_N ^{\star} (i+1) + (1-p_w)J_N ^{\star} (i-1)
+            \}
+    \] 
+    Thus, we have two cases:\\
+    \textbf{Case 1}: \(i > 1\), Then, \(J_{N-1}^{\star}(i) = 1\).
+    Thus, any action is optimal action.\\
+    \textbf{Case 2}: \(i = 1\), Then \(J_{N-1}^{\star}(i) = \max \{p_d + (1-p_d)p_w, p_w + (1-p_w)p_w \}\)\\
+    Since we assumed \(p_d > p_w \):
+    \[
+        \implies \frac{p_w}{p_d} > \frac{1-p_w}{1-p_w}
+    \]
+    Thus, optimal action is to play timid
+\end{example}
+
+\subsection{Stocastic Shortest Path}
+Since the end of the horizon is random, we cannot directly apply the principles of finite horizon
+problems. Thus, we create a slightly generealised approach. Here we asumme that there is no discounting.
+To make the cost to go reasonable, we assume that there exits a cost-free terminaation state \(0\), with 
+terminal cost of 0. Thus the goal of SSP problems in to reach the termianl state with least expected cost. 
+
+\begin{definition}[Admissible Policy]
+    A policy \(\pi \) is said to be admissible if \(\mu _k \in \mathcal{A} (i)\; \forall i,k\)
+\end{definition}
+\begin{definition}[Stationary Policy]
+    An admissible policy is said to be stationary if \(\mu _0 = \mu _1 = \mu _2 = \cdots = \mu \)
+    We will often denote the stationary policy by \(\mu \)
+\end{definition}
+\begin{definition}[Proper Policy]
+    A stationary policy is said to be proper id there exits a positive probability that the termination state will
+    be reached in at most \(n\) stages, regardless of the initial state.
+    \[
+        \implies \rho_\mu = \max_{i = 1,\dots ,n} \mathbb{P} (X_n \neq  0 \mid X_0 = i, \mu ) < 1
+    \]
+    where \(n = \left\vert \mathcal{S}  \right\vert -1 \), thus \(n\) represents the number of non ternimal states.
+\end{definition}
+A improper policy is the one which is not proper.
+\begin{lemma}
+    Suppose \(\mu \) is proper, then:
+    \[
+        \mathbb{P} (X_k \neq  0 \mid X_0 = i, \mu ) \leq \rho_\mu^{\left\lfloor \sfrac{k}{n} \right\rfloor} 
+    \]
+\end{lemma}
+\begin{lemmaproof}
+    For \(k<n\), the claim is trivially true. Suppose \(n \leq  k \leq  2n\), for some \(n\). Then we have:
+    \begin{flalign*}
+        &\mathbb{P} (X_k \neq  0 \mid X_0 = i, \mu )\\
+        &= \sum_{j \in \mathcal{S} } \mathbb{P} 
+        (X_k \neq  0, X_n = j \mid X_0 = i, \mu )\\
+            &= \sum_{j = 1}^{n} \mathbb{P} (X_k \neq  0, X_n = j \mid X_0 = i, \mu ) & \because 0 \text{ is terminal state} \\
+            &= \sum_{j = 1}^{n} \mathbb{P} (X_k \neq  0 \mid X_n = j, X_0 = i, \mu )
+             \mathbb{P} (X_n = j \mid X_0 = i, \mu )\\
+             & \leq \sum_{j = 1}^{n} \mathbb{P} (X_n = j \mid X_0 = i, \mu ) & \because \mu \text{ is proper}\\ 
+             & = \mathbb{P} (X_n \neq  0 \mid X_0 = i, \mu ) \leq  \rho_\mu
+    \end{flalign*}
+    using induction, we can show:
+    \[
+        mn \leq  k \leq  (m + 1)n
+    \]
+\end{lemmaproof}
+
+\begin{assumption}
+    There exits at leat one proper policy
+\end{assumption}
+\begin{assumption}
+    For every imporper policy \(\mu \), the corresponding cost to go \(J^{\mu} (i)\) is infinite for some \(i\)
+    \[
+        \implies J^{\mu} (i) = \mathbb{E} \left[ 
+        \sum_{n=0}^{\infty} g(X_n,\mu _n(X_n),X_{n+1}) \;\middle|\; X_0 = i
+         \right]  = \infty 
+    \]
+\end{assumption}
+Thus, we will search through proper policies to find the optimal policy.
+
+\begin{lemma}
+    Suppose \(\mu \) is proper and \(\left\vert g(i,a,j) \right\vert \leq  k, \; \forall i,a,j\), then:
+    \[
+        \left\vert J_\mu (i) \right\vert < \infty \quad \forall i
+    \]
+\end{lemma}
+\begin{lemmaproof}
+    \[
+        J_\mu (i) = \mathbb{E} \left[
+        \sum_{m=0}^{N-1} g(X_m,\mu(X_m),X_{m+1}) \;\middle|\; X_0 = i, \mu
+         \right]
+    \]
+    \begin{align*}
+        \implies & \left\vert J_\mu (i) \right\vert\\
+         &=  \left\vert  \mathbb{E} \left[
+            \sum_{m=0}^{\infty} 
+            g(X_m,\mu(X_m),X_{m+1})  \;\middle|\; X_0 = i, \mu
+             \right]\right\vert \qquad \quad \because \text{ termianl cost} = 0 \\
+        & \leq \mathbb{E} \left[
+            \sum_{m=0}^{N-1} \left\vert g(X_m,\mu(X_m),X_{m+1}) \right\vert \;\middle|\; X_0 = i, \mu
+                \right]\qquad \quad \because \left\vert \mathbb{E} X \right\vert \leq  \mathbb{E} \vert X \vert  \\
+        & = \sum_{m=0}^{\infty} \mathbb{E} \left[ 
+            \vert g(X_m,\mu(X_m),X_{m+1}) \vert \; \mid  X_0 = i, \mu
+             \right] \qquad \quad \text{// monotone convergence} \\
+        &= \sum_{m=0}^{\infty} \sum_{j,k \in \mathcal{S} } \mathbb{P} 
+        (X_m = j, \mu (j), X_{m+1} =  k \mid X_0 = i, \mu ) \left\vert g(j,\mu(j),k) \right\vert \\
+        \begin{split}
+        &= \sum_{m=0}^{\infty} \sum_{j=1}^n \mathbb{P}(X_m = j \mid X_0 = i, \mu )
+        \underbrace{\mathbb{P}(\mu (j) \mid X_0 = i, \mu ,X_m = j)}_{1}\\
+            {} &
+            \underbrace{\sum_{k \in \mathcal{S}}\mathbb{P} (X_{m+1} = k \mid X_m = j, \mu (j))}_{1}
+            \underbrace{\left\vert g(j,\mu(j),k) \right\vert}_{ \leq k} \\
+        \end{split}\\
+        & \leq k \sum_{m=0}^{\infty} \sum_{j=1}^n \mathbb{P}(X_m = j \mid X_0 = i, \mu )\\  
+        & = k \sum_{m=0}^{\infty} \mathbb{P}(X_m \neq 0 \mid X_0 = i, \mu )
+        \leq k \sum_{m=0}^{\infty} \rho_\mu^{\lfloor \sfrac{m}{n} \rfloor}
+        = k \sum_{l=0}^{\infty} \sum_{m=l-n}^{(l+1)n - 1} \rho_\mu^l\\
+        &= kn \sum_{l=0}^{\infty} \rho_\mu^l = \frac{kn}{1-\rho_\mu} < \infty
+    \end{align*}
+    Thus, completing the proof.
+\end{lemmaproof}
+
+\begin{definition}[T operator]
+    \[
+        T : \mathbb{R}^n \to  \mathbb{R}^n \quad n = \vert \mathcal{S}  \vert -1
+    \]
+    Thus, for any vector \(J = (J(1), J(2), \dots , J(n))\) we consider the vector \(TJ\) 
+    obetained by one iteration of the DP algorithm to \(J\). Thus,
+    \[
+       (TJ)(i) = \min_{a \in \mathcal{A}_i} \sum_{j \in \mathcal{S} } \mathbb{P} (j\mid i,a) ( 
+            g(i,a,j) + J(j) )
+    \] 
+\end{definition}
+\(TJ\) is the optimal cost-to-go vector for the one stage problem that has one stage cost \(g\) and terminal
+cost \(J\). Similarly, for any vector \(J\) and any stationery policy \(\mu \)  we consider the vector
+\(T_\mu J\) with components,
+\[
+    T_\mu J(i) = \sum_{j \in \mathcal{S} } \mathbb{P} (j\mid i,\mu(i)) ( 
+        g(i,\mu(i),j) + J(j) )
+\]
+Given a stationary policy \(\mu \), we can defined the \(n\times n\) matrix \(\mathcal{P} _\mu \) whose \(ij\)th entry 
+is \(\mathcal{P}_\mu (i,j) = \mathbb{P} (j \mid i, \mu (i))\). Then, we can write:
+\[
+    T_\mu J = \overline{g}_\mu +\mathcal{P}_\mu J  
+\]
+where \(\overline{g}_\mu \in \mathbb{R}^n\) is the vector with \(i\)th component,
+\[
+    \overline{g}_\mu (i, \mu(i)) = \sum_{j \in \mathcal{S} } \mathbb{P} (j\mid i,\mu(i)) g(i,\mu(i),j)
+\]
+
+\begin{definition}[\(T^k\) operator]
+    We define the \(T^k\) operator as the composition of \(T\) with itself \(k\) times. That is:
+    \[
+        (T^k J)(i) = ( T \circ T^{k-1} )J = T(T^{k-1}J)
+    \]
+    Similarly,
+    \[
+        T^k_\mu J = (T_\mu \circ T^{k-1}_\mu )J = T_\mu (T^{k-1}_\mu J)
+    \]
+\end{definition}
+Thus, it can be seen, \((T^k J)(i)\) is the optimal cost to go for the \(k\) stage problem with one stage cost \(g\)
+and terminal cost \(J\). Similarly, \((T^k_\mu J)(i)\) is the cost to go for the stationary policy \(\mu \) for the
+same problem.\\
+
+\begin{lemma}[Monotonocity Lemma]
+    For any \(n\) dimensional vector \(J, \overline{J} \), if \(J \leq \overline{J} \), then
+        \begin{itemize}
+            \item \(TJ \leq T \overline{J}\)
+            \item \(T_\mu J \leq T_\mu \overline{J}\)  
+        \end{itemize}
+\end{lemma}
+\begin{lemmaproof}
+    \[
+        \begin{aligned}
+            TJ(i) &= \min_{a \in \mathcal{A}_i} \sum_{j \in \mathcal{S} } \mathbb{P} (j\mid i,a) ( 
+                g(i,a,j) + J(j) )\\
+                & \leq \min_{a \in \mathcal{A}_i} \sum_{j \in \mathcal{S} } \mathbb{P} (j\mid i,a) ( 
+                    g(i,a,j) + \overline{J}(j) ) = T\overline{J}(i)
+        \end{aligned}
+    \]
+    Similarly,
+    \[
+        T_\mu J \leq T_\mu \overline{J}
+    \]
+\end{lemmaproof}
+\begin{corollary}
+    \[
+        T^k J \leq T^{k} \overline{J} \quad \text{ and } \quad T^k_\mu J \leq T^k_\mu \overline{J} 
+    \]
+\end{corollary}
+The above corollary can be proved using induction.
+\begin{lemma}
+    For any \( J \in  \mathbb{R} ^n\) and stationary policy \(\mu \) and \(r \geq 0\):
+    \begin{itemize}
+        \item \(T (J +re)(i) \leq TJ(i) + r\)
+        \item \(T_\mu (J +re)(i) \leq T_\mu J(i) + r\)
+    \end{itemize}
+    where \(e = (1,1,\dots ,1)^{\top}\) 
+\end{lemma}
+\begin{lemmaproof}
+    \[
+        \begin{aligned}
+            T(j +re)(i) & = \min _{a \in \mathcal{A}_i} \sum_{j \in \mathcal{S} } \mathbb{P} (j\mid i,a) ( 
+                g(i,a,j) + (J + re)(j) )\\
+                &= \min _{a \in \mathcal{A}_i} \sum_{j \in \mathcal{S} } \mathbb{P} (j\mid i,a) ( 
+                    g(i,a,j) + J(j) + r )\\
+                &= \min _{a \in \mathcal{A}_i} \sum_{j \in \mathcal{S} } \mathbb{P} (j\mid i,a) ( 
+                        g(i,a,j) + J(j) ) + r 
+                        \underbrace{\sum_{j \in \mathcal{S} } \mathbb{P} (j\mid i,a)}_{\leq 1}\\
+                &\leq \min _{a \in \mathcal{A}_i} \sum_{j \in \mathcal{S} } \mathbb{P} (j\mid i,a) ( 
+                    g(i,a,j) + J(j) ) + r \\
+                &= TJ(i) + r 
+        \end{aligned}
+    \]
+\end{lemmaproof}
